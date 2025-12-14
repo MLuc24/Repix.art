@@ -59,7 +59,7 @@ const ROLES: RoleOption[] = [
 // Steps for the upgrade flow
 type UpgradeStep = 'preview' | 'payment' | 'processing' | 'success';
 
-export const OnboardingPage = ({ onFinish }: { onFinish: (roleId: string) => void }) => {
+export const OnboardingPage = ({ onFinish, onBack }: { onFinish: (roleId: string) => void, onBack: () => void }) => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [targetRole, setTargetRole] = useState<RoleOption | null>(null);
   const [upgradeStep, setUpgradeStep] = useState<UpgradeStep>('preview');
@@ -117,6 +117,17 @@ export const OnboardingPage = ({ onFinish }: { onFinish: (roleId: string) => voi
       </div>
 
       <div className="relative z-10 max-w-6xl w-full text-center">
+        {/* Back Button */}
+        <button 
+          onClick={onBack}
+          className="absolute top-0 left-0 flex items-center gap-2 text-white/50 hover:text-white transition-colors z-20 group"
+        >
+          <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-all">
+            <Icons.ChevronLeft />
+          </div>
+          <span className="font-medium text-sm">Back</span>
+        </button>
+
         <div className="mb-12 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
             <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 1 of 1</span>

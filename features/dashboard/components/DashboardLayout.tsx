@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Icons } from '../../../shared/components/Icons';
+import { Logo } from '../../../shared/components/Logo';
 import { MOCK_USER } from '../../../services/mock/dashboard';
 import { MOCK_NOTIFICATIONS } from '../../../services/mock/notifications';
 
@@ -111,12 +112,7 @@ export const DashboardLayout = ({
         <div 
           className="h-20 flex items-center justify-between px-6"
         >
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-violet-500/20">
-              R
-            </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">REPIX</span>
-          </div>
+<Logo onClick={() => onNavigate('dashboard')} />
           
           {/* Close Mobile Menu */}
           <button 

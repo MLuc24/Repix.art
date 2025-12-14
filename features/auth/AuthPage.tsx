@@ -5,8 +5,8 @@ import { GlassPanel, AuthInput, NeonButton, SocialButton } from '../../shared/co
 
 type AuthMode = 'login' | 'register';
 
-export const AuthPage = ({ onBack }: { onBack: () => void }) => {
-  const [mode, setMode] = useState<AuthMode>('login');
+export const AuthPage = ({ initialMode = 'login', onBack, onLoginSuccess }: { initialMode?: AuthMode, onBack: () => void, onLoginSuccess: () => void }) => {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [animateCard, setAnimateCard] = useState(false);
@@ -16,17 +16,19 @@ export const AuthPage = ({ onBack }: { onBack: () => void }) => {
     setAnimateCard(true);
   }, []);
 
+  // Update mode if initialMode changes while component is mounted (though usually it re-mounts)
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
+
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     // Mock API call
     setTimeout(() => {
       setLoading(false);
-      // "Log in" successful, go back to App (which will check ViewState)
-      // Note: The App component controls the view based on this callback.
-      // We will handle the redirect logic in the App component (index.tsx)
-      // by passing a specific signal if needed, but for now onBack acts as success.
-      onBack(); 
+      // "Log in" successful, call success callback
+      onLoginSuccess(); 
     }, 1500);
   };
 
@@ -52,7 +54,7 @@ export const AuthPage = ({ onBack }: { onBack: () => void }) => {
         <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-all">
           <Icons.ChevronLeft />
         </div>
-        <span className="font-medium">Back to Home</span>
+        <span className="font-medium">Back</span>
       </button>
 
       {/* --- AUTH CARD --- */}
@@ -118,7 +120,7 @@ export const AuthPage = ({ onBack }: { onBack: () => void }) => {
               </NeonButton>
             </div>
           </form>
-
+          
           {/* SOCIAL LOGIN */}
           <div className="my-8 flex items-center gap-4">
             <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent flex-1" />
