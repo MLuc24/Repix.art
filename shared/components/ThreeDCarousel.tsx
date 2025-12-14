@@ -26,7 +26,7 @@ const DEFAULT_ITEMS = [
 /* 2️⃣  Config ————————————————————————— */
 const CARD_W = 200; 
 const CARD_H = 280;
-const RADIUS = 600; 
+const RADIUS = 450; 
 const TILT_SENSITIVITY = 0; 
 const DRAG_SENSITIVITY = 0.5;
 const INERTIA_FRICTION = 0.95;

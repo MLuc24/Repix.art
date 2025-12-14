@@ -159,10 +159,13 @@ const Hero = ({ onCtaClick, onWatchDemo }: { onCtaClick: () => void, onWatchDemo
         >
            <span className="px-10 py-4 text-lg font-bold flex items-center gap-2">Start Editing Free <Icons.Wand className="w-5 h-5"/></span>
         </ShimmerButton>
-        <Button variant="outline" className="w-full sm:w-auto text-lg px-10 py-4 group" onClick={onWatchDemo}>
+        <button 
+           className="relative w-full sm:w-auto px-10 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 overflow-hidden group border border-white/20 text-slate-300 hover:border-violet-500 hover:text-white hover:bg-violet-500/10 hover:shadow-lg hover:shadow-violet-500/10" 
+           onClick={onWatchDemo}
+        >
           <Icons.Play className="w-5 h-5 group-hover:text-red-500 transition-colors" />
           Watch Demo
-        </Button>
+        </button>
       </div>
 
       <div className="mt-10 flex items-center justify-center md:justify-start gap-4 text-sm text-slate-500 font-medium">
@@ -207,7 +210,7 @@ const Hero = ({ onCtaClick, onWatchDemo }: { onCtaClick: () => void, onWatchDemo
   </Section>
 );
 
-const MarketplaceSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
+const MarketplaceSection = ({ onCtaClick, onSellClick }: { onCtaClick: () => void, onSellClick?: () => void }) => (
   <Section id="marketplace" className="relative overflow-hidden pt-32">
     {/* Background Glow */}
     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-violet-900/20 blur-[120px] rounded-full pointer-events-none -z-10" />
@@ -224,14 +227,14 @@ const MarketplaceSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
         <br className="hidden md:block" />
         Filter by rating, author, or tags to find the perfect asset for your project.
       </p>
-      <div className="flex items-center justify-center gap-4">
-        <Button onClick={onCtaClick} className="rounded-full px-8 py-4 text-base shadow-violet-500/20">
-          Browse All Assets
-        </Button>
-        <button onClick={onCtaClick} className="px-6 py-4 rounded-full font-bold text-slate-300 hover:text-white hover:bg-white/5 transition-colors">
-          Sell Your Work
-        </button>
-      </div>
+        <div className="flex items-center justify-center gap-4">
+          <Button onClick={onCtaClick} className="rounded-full px-8 py-4 text-base shadow-violet-500/20">
+            Browse All Assets
+          </Button>
+          <Button onClick={onSellClick} variant="outline" className="rounded-full px-8 py-4 text-base">
+            Sell Your Work
+          </Button>
+        </div>
     </div>
 
     <div className="h-[600px] w-full -mt-20 relative z-0">
@@ -259,10 +262,29 @@ const LandingPage = ({ onNavigate }: { onNavigate: (path: string, mode?: 'login'
     <main className="text-white">
       <Hero onCtaClick={() => onNavigate('auth', 'register')} onWatchDemo={() => setShowDemo(true)} />
       <PartnersMarquee />
-      <ShowcaseSection onCtaClick={() => onNavigate('auth', 'register')} />
+      <ShowcaseSection 
+        onCtaClick={() => onNavigate('auth', 'register')} 
+        onGalleryClick={() => {
+          const element = document.getElementById('marketplace');
+          if (element) {
+             element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }}
+      />
       <Features3D />
-      <RemixSection onCtaClick={() => onNavigate('auth', 'register')} />
-      <MarketplaceSection onCtaClick={() => onNavigate('auth', 'login')} />
+      <RemixSection 
+        onCtaClick={() => onNavigate('auth', 'register')} 
+        onGalleryClick={() => {
+          const element = document.getElementById('marketplace');
+          if (element) {
+             element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }}
+      />
+      <MarketplaceSection 
+        onCtaClick={() => onNavigate('auth', 'login')} 
+        onSellClick={() => onNavigate('auth', 'register')}
+      />
       <Pricing3D onCtaClick={() => onNavigate('auth', 'register')} />
       
       <GlassModal 
@@ -487,15 +509,17 @@ const App = () => {
 
   return (
     <>
-      {/* Dev Tool to Switch Roles */}
-      <div className="fixed bottom-4 right-4 z-[9999] opacity-50 hover:opacity-100 transition-opacity">
-         <button 
-           onClick={handleRoleToggle}
-           className="bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-white/20"
-         >
-           Switch Role: {userRole.toUpperCase()}
-         </button>
-      </div>
+      {/* Dev Tool to Switch Roles - Only visible in authenticated dashboard views */}
+      {currentView !== 'landing' && currentView !== 'auth' && currentView !== 'onboarding' && (
+        <div className="fixed bottom-4 right-4 z-[9999] opacity-50 hover:opacity-100 transition-opacity">
+           <button 
+             onClick={handleRoleToggle}
+             className="bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-white/20"
+           >
+             Switch Role: {userRole.toUpperCase()}
+           </button>
+        </div>
+      )}
       {renderView()}
     </>
   );

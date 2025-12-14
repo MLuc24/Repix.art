@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Particles } from '../../shared/components/Particles';
 import { Icons } from '../../shared/components/Icons';
 import { NeonButton, GlassModal } from '../../shared/components/GlassUI';
 
@@ -111,114 +113,155 @@ export const OnboardingPage = ({ onFinish, onBack }: { onFinish: (roleId: string
   return (
     <div className="min-h-screen bg-[#020617] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background Ambience */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-violet-900/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px]" />
+      {/* Background Ambience - Hyperspeed */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <Particles
+            particleCount={300}
+            particleSpread={10}
+            speed={0.1}
+            particleColors={['#8b5cf6', '#cbd5e1', '#6366f1']}
+            moveParticlesOnHover={true}
+            particleHoverFactor={2}
+            alphaParticles={true}
+            particleBaseSize={120}
+            sizeRandomness={1}
+            cameraDistance={20}
+            pixelRatio={typeof window !== 'undefined' ? window.devicePixelRatio : 1}
+            className="w-full h-full"
+        />
       </div>
 
-      <div className="relative z-10 max-w-6xl w-full text-center">
+      <div className="relative z-10 max-w-7xl w-full text-center px-4">
         {/* Back Button */}
-        <button 
+        <motion.button 
           onClick={onBack}
-          className="absolute top-0 left-0 flex items-center gap-2 text-white/50 hover:text-white transition-colors z-20 group"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="absolute top-0 left-4 md:left-0 flex items-center gap-2 text-white/50 hover:text-white transition-colors z-20 group"
         >
-          <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-all">
+          <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-all border border-white/5">
             <Icons.ChevronLeft />
           </div>
-          <span className="font-medium text-sm">Back</span>
-        </button>
+          <span className="font-medium text-sm hidden md:inline-block">Back to Login</span>
+        </motion.button>
 
-        <div className="mb-12 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
-            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 1 of 1</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-            How will you use REPIX?
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16 mt-12 md:mt-0"
+        >
+          <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-white drop-shadow-2xl">
+            Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400">Workspace</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Select your workspace experience.
+          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Select the experience that best fits your needs. 
+            <br className="hidden md:block"/> You can always switch or upgrade later.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          {ROLES.map((role) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 px-2">
+          {ROLES.map((role, index) => {
             const isSelected = selectedRole === role.id;
-            // If the role is locked, and NOT the one currently force-selected (after upgrade)
             const isLockedState = role.locked && !isSelected;
 
             return (
-              <button
+              <motion.button
                 key={role.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
                 onClick={() => handleRoleClick(role)}
                 className={`
-                  relative p-6 rounded-3xl border text-left transition-all duration-300 group flex flex-col overflow-hidden
+                  relative p-6 rounded-[2rem] text-left transition-all duration-300 group flex flex-col items-start overflow-hidden h-full min-h-[380px]
                   ${isSelected 
-                    ? `bg-white/10 border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)] scale-105 z-10 ring-1 ring-white/30` 
-                    : isLockedState
-                      ? 'bg-[#0f0f12] border-white/5 opacity-80 hover:opacity-100 hover:border-white/10'
-                      : 'bg-[#1a1b26] border-white/5 hover:border-white/20 hover:bg-[#1f202e]'
+                    ? 'bg-gradient-to-b from-white/10 to-white/5 border-violet-500/50 shadow-[0_0_40px_-10px_rgba(139,92,246,0.3)] scale-[1.02] z-10 ring-1 ring-violet-500/50' 
+                    : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-violet-500/30 hover:shadow-[0_0_20px_-5px_rgba(139,92,246,0.15)] focus:border-violet-500/40'
                   }
+                  border backdrop-blur-xl
                 `}
               >
+                {/* Selection Ring Glow */}
+                {isSelected && <div className="absolute inset-0 rounded-[2rem] ring-2 ring-violet-500/50 shadow-[inset_0_0_20px_rgba(139,92,246,0.2)] pointer-events-none" />}
+
                 {/* Header Icon */}
-                <div className={`mb-6 p-4 rounded-2xl w-fit border border-white/10 relative overflow-hidden bg-gradient-to-br ${role.color}`}>
-                   {role.icon}
+                <div className={`
+                  mb-6 p-4 rounded-2xl w-16 h-16 flex items-center justify-center border border-white/10 relative overflow-hidden bg-gradient-to-br ${role.color} shadow-lg
+                  ${isSelected ? 'scale-110' : 'group-hover:scale-105'} transition-transform duration-300
+                `}>
+                   {React.cloneElement(role.icon as React.ReactElement<{ className?: string }>, { className: "w-8 h-8 text-white" })}
                 </div>
 
-                {/* Locked Overlay Badge */}
-                {isLockedState && (
-                  <div className="absolute top-4 right-4 px-2 py-1 rounded bg-black/60 backdrop-blur border border-white/10 flex items-center gap-1.5 shadow-lg z-20">
-                    <Icons.Lock className="w-3 h-3 text-slate-400" />
-                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wide">Locked</span>
+                {/* Content */}
+                <div className="relative z-10 w-full flex-grow flex flex-col">
+                  <div className="flex justify-between items-start w-full mb-2">
+                    <h3 className={`text-2xl font-bold ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'} transition-colors`}>{role.title}</h3>
+                    
+                    {/* Checkmark or Lock Icon */}
+                    {isSelected && (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-green-500 text-white p-1.5 rounded-full shadow-lg shadow-green-500/30">
+                        <Icons.Check className="w-4 h-4" />
+                      </motion.div>
+                    )}
+                    {isLockedState && (
+                       <div className="bg-black/40 border border-white/10 p-1.5 rounded-full">
+                          <Icons.Lock className="w-3.5 h-3.5 text-slate-400" />
+                       </div>
+                    )}
                   </div>
-                )}
 
-                {/* Selected Badge */}
-                {isSelected && (
-                  <div className="absolute top-4 right-4 p-1 rounded-full bg-green-500 text-white shadow-lg shadow-green-500/50 z-20">
-                    <Icons.Check className="w-4 h-4" />
-                  </div>
-                )}
-
-                <h3 className={`text-xl font-bold mb-2 ${isSelected ? 'text-white' : 'text-slate-200'}`}>{role.title}</h3>
-                <p className="text-sm text-slate-400 mb-6 min-h-[40px] leading-relaxed">{role.desc}</p>
-                
-                <div className="space-y-3 mt-auto">
-                  {role.features.map((feat, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
-                      <div className={`p-0.5 rounded-full flex-none ${isSelected ? 'bg-green-500/20 text-green-400' : 'bg-slate-800 text-slate-600'}`}>
-                         <Icons.Check className="w-2 h-2" />
+                  <p className="text-sm text-slate-400 mb-8 min-h-[40px] leading-relaxed font-medium">
+                    {role.desc}
+                  </p>
+                  
+                  <div className="space-y-3 mt-auto w-full pt-6 border-t border-white/5">
+                    {role.features.map((feat, i) => (
+                      <div key={i} className="flex items-center gap-3 text-sm text-slate-400/90">
+                        <Icons.Check className={`w-4 h-4 ${isSelected ? 'text-green-400' : 'text-slate-600'}`} />
+                        <span className={isSelected ? 'text-slate-200' : ''}>{feat}</span>
                       </div>
-                      <span className={isSelected ? 'text-slate-300' : ''}>{feat}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                {/* Hover CTA for Locked Items */}
+                {/* Locked Overlay/Hover */}
                 {isLockedState && (
-                  <div className="absolute inset-0 bg-black/80 backdrop-blur-[2px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 p-4 text-center">
-                     <Icons.Lock className="w-8 h-8 text-white mb-2" />
-                     <p className="text-white font-bold text-sm mb-1">Premium Plan</p>
-                     <p className="text-slate-400 text-xs mb-4">Unlock for {role.price}</p>
-                     <span className="px-4 py-2 rounded-lg bg-white text-black text-xs font-bold uppercase tracking-wider">
-                       Upgrade
-                     </span>
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-[3px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                     <motion.div 
+                       initial={{ y: 10 }} 
+                       whileHover={{ y: 0 }} 
+                       className="bg-[#1e1e26] border border-white/10 p-6 rounded-2xl shadow-2xl text-center transform scale-90 group-hover:scale-100 transition-transform"
+                     >
+                       <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Icons.Lock className="w-6 h-6 text-white" />
+                       </div>
+                       <p className="text-white font-bold text-lg mb-1">Premium Plan</p>
+                       <p className="text-slate-400 text-sm mb-4">Unlock full power for {role.price}</p>
+                       <span className="inline-block px-6 py-2 rounded-full bg-white text-black text-xs font-bold uppercase tracking-wider hover:bg-slate-200 transition-colors">
+                         View Details
+                       </span>
+                     </motion.div>
                   </div>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </div>
 
-        <div className="flex justify-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <motion.div 
+          className="flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
           <NeonButton 
             onClick={handleFreeContinue} 
             disabled={!selectedRole}
-            className="!w-full md:!w-64"
+            className="!w-full md:!w-72 !py-4 !text-lg !rounded-full shadow-2xl shadow-violet-500/20"
           >
-            Get Started
+            Enter Workspace
           </NeonButton>
-        </div>
+        </motion.div>
       </div>
 
       {/* --- UPGRADE FLOW MODAL --- */}

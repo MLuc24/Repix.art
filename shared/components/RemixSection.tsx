@@ -32,7 +32,7 @@ const Section = ({ children, className = "", id, ...props }: React.HTMLAttribute
   </section>
 );
 
-export const RemixSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
+export const RemixSection = ({ onCtaClick, onGalleryClick }: { onCtaClick: () => void, onGalleryClick?: () => void }) => (
   <Section id="remix" className="relative">
     <div className="flex flex-col lg:flex-row items-center gap-16">
       {/* Visual - Functional Demo Look */}
@@ -79,7 +79,7 @@ export const RemixSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
                         <motion.div 
                           animate={{ y: [0, -10, 0] }}
                           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                          className="absolute top-10 right-10 bg-black/80 backdrop-blur border border-violet-500/30 p-4 rounded-xl shadow-xl shadow-violet-900/20 max-w-[160px]"
+                          className="absolute top-10 right-10 bg-black/80 backdrop-blur border border-violet-500/30 p-4 rounded-xl shadow-xl shadow-violet-900/20 max-w-[160px] z-30"
                         >
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -142,7 +142,7 @@ export const RemixSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
                 <Icons.Upload className="w-5 h-5" />
                 Start Remixing
             </Button>
-            <Button onClick={onCtaClick} variant="outline">
+            <Button onClick={onGalleryClick} variant="outline">
                 View Gallery
             </Button>
         </div>

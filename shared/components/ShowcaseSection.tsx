@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icons } from './Icons';
+import { NeonButton } from './GlassUI';
 
 const DEMO_STYLES = [
   { 
@@ -37,7 +38,7 @@ const DEMO_STYLES = [
   },
 ];
 
-export const ShowcaseSection = ({ onCtaClick }: { onCtaClick?: () => void }) => {
+export const ShowcaseSection = ({ onCtaClick, onGalleryClick }: { onCtaClick?: () => void, onGalleryClick?: () => void }) => {
   const [selectedStyle, setSelectedStyle] = useState(DEMO_STYLES[0]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -206,17 +207,24 @@ export const ShowcaseSection = ({ onCtaClick }: { onCtaClick?: () => void }) => 
         {/* Action Buttons */}
         <div className="mt-16 flex flex-col items-center gap-6">
             <div className="flex flex-wrap items-center justify-center gap-4">
-                <button 
+                <NeonButton 
                   onClick={onCtaClick}
-                  className="px-8 py-4 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold text-lg hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] hover:scale-105 transition-all duration-300 flex items-center gap-2"
+                  className="!w-auto rounded-full px-8 shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:shadow-[0_0_50px_rgba(139,92,246,0.8)]"
                 >
-                    <Icons.Wand className="w-5 h-5" />
-                    Try It Yourself
-                </button>
-                <button className="px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all duration-300 flex items-center gap-2">
-                    <Icons.Gallery className="w-5 h-5" />
-                    View Gallery
-                </button>
+                    <span className="flex items-center gap-2 text-lg">
+                        <Icons.Wand className="w-5 h-5" />
+                        Try It Yourself
+                    </span>
+                </NeonButton>
+                <NeonButton 
+                  onClick={onGalleryClick}
+                  className="!w-auto rounded-full px-8 bg-white/5 border border-white/10 hover:bg-white/10 !bg-none shadow-none hover:shadow-lg hover:shadow-white/5"
+                >
+                    <span className="flex items-center gap-2 text-lg">
+                        <Icons.Gallery className="w-5 h-5" />
+                        View Gallery
+                    </span>
+                </NeonButton>
             </div>
             
             <button className="text-slate-400 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors">
