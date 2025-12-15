@@ -59,7 +59,6 @@ const FREELANCER_SIDEBAR_ITEMS = [
 // Team extends Freelancer with collaboration features
 const TEAM_SIDEBAR_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
-  { id: 'team-activity', label: 'Activity', icon: <Icons.Activity className="w-5 h-5" /> }, // R4.3
   { id: 'team-members', label: 'Team Members', icon: <Icons.User className="w-5 h-5" /> }, // R4.8
   { id: 'freelancer-analytics', label: 'Performance', icon: <Icons.TrendingUp className="w-5 h-5" /> },
   { id: 'team-billing', label: 'Credits & Billing', icon: <Icons.CreditCard className="w-5 h-5" /> }, // R4.9

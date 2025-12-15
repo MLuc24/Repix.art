@@ -189,7 +189,7 @@ export const TeamDashboardPage: React.FC<TeamDashboardPageProps> = ({ onLogout, 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Recent Activity - Takes 2/3 */}
                     <div className="lg:col-span-2">
-                        <TeamRecentActivity activities={MOCK_TEAM_ACTIVITIES.slice(0, 6)} />
+                        <TeamRecentActivity activities={MOCK_TEAM_ACTIVITIES} />
                     </div>
 
                     {/* Team Members Preview - Takes 1/3 */}
