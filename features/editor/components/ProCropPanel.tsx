@@ -4,8 +4,9 @@ import { Icons } from '../../../shared/components/Icons';
 import { EditorSlider } from './EditorUI';
 import { NeonButton } from '../../../shared/components/GlassUI';
 
-export const ProCropPanel = () => {
-  const [rotation, setRotation] = useState(0);
+export const ProCropPanel = ({ rotation, onRotationChange }: { rotation: number, onRotationChange: (val: number) => void }) => {
+  // Lifted rotation state to parent
+  const setRotation = onRotationChange; // Alias for compatibility
   const [activeRatio, setActiveRatio] = useState('original');
 
   const ratios = [
