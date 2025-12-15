@@ -19,7 +19,7 @@ import { GlassModal, NeonButton } from '../../../shared/components/GlassUI';
 export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFolder, setActiveFolder] = useState<string | null>(null);
+  const [activeFolder, setActiveFolder] = useState<string | null>(MOCK_FOLDERS[0]?.id || null);
   const [selectedAsset, setSelectedAsset] = useState<AssetItem | null>(null);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false); // Phone Sync
   const [isFolderPickerOpen, setIsFolderPickerOpen] = useState(false); // Computer Sync

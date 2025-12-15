@@ -35,13 +35,7 @@ export const FolderList = ({ folders, activeId, onSelect, onCreate }: FolderList
              <button onClick={onCreate} className="p-1 hover:bg-slate-100 dark:hover:bg-white/5 rounded text-slate-400 hover:text-slate-900 dark:hover:text-white"><Icons.Plus className="w-3 h-3" /></button>
           </div>
           <div className="space-y-1">
-             <button 
-               onClick={() => onSelect(null)}
-               className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeId === null ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'}`}
-             >
-                <Icons.Grid className={`w-4 h-4 ${activeId === null ? 'text-white' : 'text-slate-400'}`} />
-                <span className="text-sm font-bold">All Assets</span>
-             </button>
+{/* All Assets Button Removed */}
              {folders.map(folder => (
                <button 
                  key={folder.id}

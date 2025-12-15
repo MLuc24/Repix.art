@@ -5,7 +5,7 @@ interface UploadDropzoneProps {
   onFilesSelected?: (files: File[]) => void;
 }
 
-export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFilesSelected }) => {
+export const UploadDropzone: React.FC<UploadDropzoneProps & { previewFiles?: File[], onClear?: () => void }> = ({ onFilesSelected, previewFiles = [], onClear }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -30,7 +30,9 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFilesSelected 
   };
 
   const handleClick = () => {
-    fileInputRef.current?.click();
+    if (previewFiles.length === 0) {
+        fileInputRef.current?.click();
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +43,75 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFilesSelected 
     }
   };
 
+  if (previewFiles.length > 0) {
+      return (
+        <div 
+            className="w-full h-full min-h-[300px] bg-slate-50 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/10 p-6 relative"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+        >
+             <button 
+                onClick={onClear}
+                className="absolute top-4 right-4 p-2 bg-slate-200 dark:bg-white/10 rounded-full hover:bg-red-500 hover:text-white transition-colors z-10"
+             >
+                 <Icons.Close className="w-4 h-4" />
+             </button>
+             
+             {/* Hidden input for the 'Add' button */}
+             <input 
+                type="file" 
+                multiple 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={handleFileChange}
+             />
+
+             <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 h-full overflow-y-auto pr-2 custom-scrollbar max-h-[300px] content-start">
+                {previewFiles.map((file, idx) => (
+                    <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-black/20 group">
+                        <img 
+                            src={URL.createObjectURL(file)} 
+                            alt={file.name} 
+                            className="w-full h-full object-cover" 
+                            onLoad={(e) => URL.revokeObjectURL(e.currentTarget.src)}
+                        />
+                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            {/* We could add individual remove here if needed */}
+                        </div>
+                    </div>
+                ))}
+                
+                {/* Add More Button */}
+                <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative aspect-square rounded-xl border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-violet-500 dark:hover:border-violet-400 bg-slate-100/50 dark:bg-white/5 hover:bg-violet-50 dark:hover:bg-violet-500/10 flex flex-col items-center justify-center text-slate-400 hover:text-violet-500 transition-all group"
+                >
+                    <div className="p-3 rounded-full bg-slate-200 dark:bg-white/10 group-hover:bg-violet-100 dark:group-hover:bg-violet-500/20 mb-2 transition-colors">
+                        <Icons.Plus className="w-6 h-6" />
+                    </div>
+                    <span className="text-xs font-bold">Add </span>
+                </button>
+             </div>
+             
+             <div className="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-none">
+                 <p className="text-sm text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-black/80 px-4 py-2 rounded-full backdrop-blur-md shadow-sm">
+                    {previewFiles.length} photo(s) selected
+                 </p>
+             </div>
+
+             {/* Drag Overlay */}
+             {isDragOver && (
+                <div className="absolute inset-0 z-20 bg-violet-500/10 backdrop-blur-sm rounded-3xl border-2 border-violet-500 flex items-center justify-center">
+                    <div className="animate-bounce bg-white dark:bg-[#1a1b26] p-4 rounded-full shadow-xl">
+                        <Icons.Upload className="w-8 h-8 text-violet-500" />
+                    </div>
+                </div>
+             )}
+        </div>
+      );
+  }
+
   return (
     <div
       onClick={handleClick}
@@ -48,7 +119,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFilesSelected 
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={`
-        border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-all duration-300
+        border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-all duration-300 min-h-[300px] flex flex-col items-center justify-center
         ${isDragOver 
           ? 'border-violet-500 bg-violet-500/10 scale-[1.02]' 
           : 'border-slate-200 dark:border-white/10 hover:border-violet-400 dark:hover:border-violet-500/50 hover:bg-slate-50 dark:hover:bg-white/5'}
@@ -62,7 +133,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFilesSelected 
         onChange={handleFileChange}
       />
       
-      <div className="w-20 h-20 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="w-20 h-20 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-full flex items-center justify-center mb-6">
         <Icons.Upload className="w-8 h-8" />
       </div>
       
