@@ -3,68 +3,52 @@ import { GenModel } from '../../features/generator/types';
 
 export const MOCK_MODELS: GenModel[] = [
   {
-    id: 'realphoto-v3',
-    name: 'RealPhoto V3',
-    description: 'High-end photorealism with perfect lighting. (Pro)',
-    thumbnail: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?auto=format&fit=crop&w=400&q=80',
+    id: 'midjourney-v6',
+    name: 'Midjourney v6.1',
+    description: 'The gold standard for artistic and photorealistic image generation.',
+    thumbnail: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=400&q=80', // Artistic/Fantasy
     isPro: true,
-    cost: 3
+    cost: 4
   },
   {
-    id: 'hyperdetail-pro',
-    name: 'HyperDetail Pro',
-    description: 'Extreme texture and sharpness for 8k displays. (Pro)',
-    thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    id: 'dall-e-3',
+    name: 'DALL-E 3',
+    description: 'Exceptional prompt adherence and creative text rendering.',
+    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80', // Abstract/Surreal
     isPro: true,
-    cost: 3
+    cost: 4
   },
   {
-    id: 'nano-banana',
-    name: 'Nano Banana Pro',
-    description: "(a.k.a Nano Banana 2) Google's new state-of-the-art image generation.",
-    thumbnail: 'https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&w=400&q=80', // Spiderman/Action figure vibe
-    isPro: true,
-    cost: 3
-  },
-  {
-    id: 'veo-3',
-    name: 'Veo 3.1',
-    description: 'Create cinematic ads or stories from a single prompt, faster and better.',
-    thumbnail: 'https://images.unsplash.com/photo-1626544827763-d516dce335e2?auto=format&fit=crop&w=400&q=80', // Cinematic Watch/Product
-    isPro: true,
-    cost: 5
-  },
-  {
-    id: 'sora-2',
-    name: 'Sora 2',
-    description: 'Excels at creating ad videos for any scenario from lifestyle to cinematic.',
-    thumbnail: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&q=80', // Cinematic Movie Scene
-    isPro: true,
-    cost: 5
-  },
-  {
-    id: 'wan-2.5',
-    name: 'Wan 2.5',
-    description: 'Produces high-quality, detailed images with natural style and fast rendering.',
-    thumbnail: 'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?auto=format&fit=crop&w=400&q=80', // Abstract 3D Face
+    id: 'sd-3.5',
+    name: 'Stable Diffusion 3.5',
+    description: 'Versatile, high-performance model with excellent control.',
+    thumbnail: 'https://images.unsplash.com/photo-1535905557558-afc4877a26fc?auto=format&fit=crop&w=400&q=80', // Cyberpunk/Neon
     isPro: false,
-    cost: 1
-  },
-  {
-    id: 'seedance',
-    name: 'Seedance 1.0',
-    description: 'Excels at dynamic visuals, ideal for music video generation.',
-    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80', // Retro Gaming/Neon
-    isPro: true,
     cost: 2
   },
   {
-    id: 'repix-basic',
-    name: 'Repix Basic',
-    description: 'Standard fast image generation for everyday use.',
-    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80', // Abstract Liquid
-    isPro: false,
-    cost: 1
+    id: 'flux-1',
+    name: 'Flux.1 Pro',
+    description: 'State-of-the-art realism and prompt fidelity.',
+    thumbnail: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=400&q=80', // Urban/City Realism
+    isPro: true,
+    cost: 3
+  },
+  {
+    id: 'imagen-3',
+    name: 'Imagen 3',
+    description: "Google's latest photorealistic model with high detail.",
+    thumbnail: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=400&q=80', // Landscape High Detail
+    isPro: true,
+    cost: 3
+  },
+  {
+    id: 'leonardo-phoenix',
+    name: 'Leonardo Phoenix',
+    description: 'Optimized for creative assets and game concept art.',
+    thumbnail: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=400&q=80', // Cyberpunk/Neon/Game Art
+    isPro: true,
+    cost: 3
   }
 ];
 

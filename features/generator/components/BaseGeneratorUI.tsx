@@ -320,54 +320,108 @@ interface HeroModelGridProps {
 }
 
 export const HeroModelGrid = ({ models, onSelect }: HeroModelGridProps) => {
+  // Inject keyframes for marquee animation
+  useEffect(() => {
+    const styleSheet = document.createElement("style");
+    // We are scrolling 4 identical sets of items.
+    // To make it seamless, we move from 0 to -25% (the width of one set).
+    styleSheet.innerText = `
+      @keyframes marquee-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-25%); } 
+      }
+    `;
+    document.head.appendChild(styleSheet);
+    return () => {
+      document.head.removeChild(styleSheet);
+    };
+  }, []);
+
+  const MarqueeRow = ({ items, speed, direction }: { items: GenModel[], speed: string, direction: 'normal' | 'reverse' }) => {
+    
+    // Helper to render the cards
+    const renderItems = (keyPrefix: string) => items.map((model, idx) => (
+      <div 
+        key={`${keyPrefix}-${model.id}-${idx}`}
+        onClick={() => onSelect(model)}
+        className="group relative flex-shrink-0 w-[220px] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer border border-slate-200 dark:border-white/5 hover:border-violet-500 dark:hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-[#1a1b26]"
+      >
+        <img 
+          src={model.thumbnail} 
+          alt={model.name} 
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" 
+        />
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
+
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 w-full p-4 flex flex-col gap-1">
+          <h3 className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors shadow-sm truncate">
+            {model.name}
+          </h3>
+          <p className="text-[10px] text-slate-300 dark:text-slate-400 leading-snug line-clamp-2 group-hover:text-slate-200">
+            {model.description}
+          </p>
+        </div>
+
+        {/* Pro Badge */}
+        {model.isPro && (
+          <div className="absolute top-3 right-3 bg-white/80 dark:bg-black/60 backdrop-blur rounded p-1 shadow-sm border border-amber-500/20">
+            <span className="text-[9px] font-bold text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30">PRO</span>
+          </div>
+        )}
+      </div>
+    ));
+
+    return (
+      <div className="w-full overflow-hidden" 
+        style={{ 
+          maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
+        }}
+      >
+        <div className="flex w-max">
+           <div 
+             className="flex"
+             style={{
+               animation: `marquee-scroll ${speed} linear infinite ${direction}`
+             }}
+           >
+              {/* 4 Sets ensure that we have enough content to scroll seamlessly even on wide screens 
+                  and the -25% logic corresponds to exactly shifting one set out. */}
+              <div className="flex gap-6 pr-6 shrink-0">
+                  {renderItems('a')}
+              </div>
+              <div className="flex gap-6 pr-6 shrink-0">
+                  {renderItems('b')}
+              </div>
+              <div className="flex gap-6 pr-6 shrink-0">
+                  {renderItems('c')}
+              </div>
+              <div className="flex gap-6 pr-6 shrink-0">
+                  {renderItems('d')}
+              </div>
+           </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="animate-fade-in-up w-full">
       {/* Header */}
       <div className="text-center mb-10 mt-4">
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="text-2xl">🚀</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Try to make crazy image & video</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Popular Image Generation Models</h2>
         </div>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">Create any video or image with any AI model</p>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">Explore top-tier AI models for every creative need</p>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-20">
-        {models.map((model, idx) => (
-          <div 
-            key={model.id}
-            onClick={() => onSelect(model)}
-            className="group relative w-full aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer border border-slate-200 dark:border-white/5 hover:border-violet-500 dark:hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-white dark:bg-[#1a1b26]"
-            style={{ animationDelay: `${idx * 0.05}s` }}
-          >
-            {/* Image */}
-            <img 
-              src={model.thumbnail} 
-              alt={model.name} 
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" 
-            />
-            
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
-
-            {/* Content */}
-            <div className="absolute bottom-0 left-0 w-full p-4 flex flex-col gap-1">
-              <h3 className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors shadow-sm">
-                {model.name}
-              </h3>
-              <p className="text-[10px] text-slate-300 dark:text-slate-400 leading-snug line-clamp-3 group-hover:text-slate-200">
-                {model.description}
-              </p>
-            </div>
-
-            {/* Pro Badge */}
-            {model.isPro && (
-              <div className="absolute top-3 right-3 bg-black/60 backdrop-blur rounded p-1 shadow-sm">
-                <span className="text-[9px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30">PRO</span>
-              </div>
-            )}
-          </div>
-        ))}
+      <div className="flex flex-col gap-6 pb-20">
+         <MarqueeRow items={models} speed="60s" direction="normal" />
+         <MarqueeRow items={models} speed="70s" direction="reverse" />
       </div>
     </div>
   );

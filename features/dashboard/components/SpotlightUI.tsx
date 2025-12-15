@@ -71,26 +71,27 @@ export const DashboardQuickPrompt = ({ value, onChange, onSubmit, credits, onBuy
           type="text" 
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && hasCredits && onSubmit()}
+          onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
           placeholder="Describe what you want to create..."
           className="w-full md:flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-4 py-3 font-medium transition-colors"
         />
         
-        {hasCredits ? (
-          <button 
-            onClick={onSubmit}
-            className="w-full md:w-auto px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold hover:bg-slate-800 dark:hover:bg-violet-50 transition-colors flex items-center justify-center gap-2 mt-2 md:mt-0 shadow-lg shadow-slate-900/10 dark:shadow-none"
-          >
-            <span>Generate</span>
-            <Icons.ArrowRight className="w-4 h-4" />
-          </button>
-        ) : (
+        {(!value && !hasCredits) ? (
           <button 
             onClick={onBuyCredits}
             className="w-full md:w-auto px-6 py-2.5 rounded-xl bg-violet-600 text-white font-bold hover:bg-violet-500 transition-colors flex items-center justify-center gap-2 mt-2 md:mt-0 shadow-lg shadow-violet-500/20"
           >
             <Icons.Bolt className="w-4 h-4" />
             <span>Buy Credits</span>
+          </button>
+        ) : (
+          <button 
+            onClick={onSubmit}
+            disabled={!value}
+            className={`w-full md:w-auto px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold transition-all flex items-center justify-center gap-2 mt-2 md:mt-0 shadow-lg shadow-slate-900/10 dark:shadow-none ${!value ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-800 dark:hover:bg-violet-50'}`}
+          >
+            <span>Continue</span>
+            <Icons.ArrowRight className="w-4 h-4" />
           </button>
         )}
       </div>
