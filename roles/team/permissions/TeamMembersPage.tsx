@@ -16,6 +16,7 @@ import { MOCK_TEAM_USER } from '../../../services/mock/dashboard';
 import { Icons } from '../../../shared/components/Icons';
 import { MOCK_TEAM_MEMBERS } from './types';
 import { MemberCard } from './MemberCard';
+import { MemberTableRow } from './MemberTableRow';
 import { RolePermissionsModal } from './RolePermissionsModal';
 import { MemberDetailPanel } from './MemberDetailPanel';
 import { InviteMemberModal } from './InviteMemberModal';
@@ -31,6 +32,7 @@ export const TeamMembersPage = ({ onLogout, onNavigate }: TeamMembersPageProps) 
     const [members, setMembers] = useState<TeamMember[]>(MOCK_TEAM_MEMBERS);
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState<TeamRole | 'all'>('all');
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
     const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
@@ -213,6 +215,36 @@ export const TeamMembersPage = ({ onLogout, onNavigate }: TeamMembersPageProps) 
                         />
                     </div>
 
+                    {/* View Mode Toggle */}
+                    <div className="flex gap-2 bg-[#1a1b26] border border-white/10 rounded-xl p-1">
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={`
+                                px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2
+                                ${viewMode === 'grid'
+                                    ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }
+                            `}
+                        >
+                            <Icons.Grid className="w-4 h-4" />
+                            Grid
+                        </button>
+                        <button
+                            onClick={() => setViewMode('table')}
+                            className={`
+                                px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2
+                                ${viewMode === 'table'
+                                    ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }
+                            `}
+                        >
+                            <Icons.Layout className="w-4 h-4" />
+                            Table
+                        </button>
+                    </div>
+
                     {/* Role Filter */}
                     <div className="flex gap-2">
                         {(['all', 'admin', 'editor', 'viewer'] as const).map(role => (
@@ -233,20 +265,53 @@ export const TeamMembersPage = ({ onLogout, onNavigate }: TeamMembersPageProps) 
                     </div>
                 </div>
 
-                {/* Members Grid */}
+                {/* Members Display - Grid or Table */}
                 {filteredMembers.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredMembers.map(member => (
-                            <MemberCard
-                                key={member.id}
-                                member={member}
-                                onRoleChange={handleRoleChange}
-                                onRemove={handleRemoveMember}
-                                onViewDetails={setSelectedMember}
-                                currentUserRole={currentUserRole}
-                            />
-                        ))}
-                    </div>
+                    viewMode === 'grid' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {filteredMembers.map(member => (
+                                <MemberCard
+                                    key={member.id}
+                                    member={member}
+                                    onRoleChange={handleRoleChange}
+                                    onRemove={handleRemoveMember}
+                                    onViewDetails={setSelectedMember}
+                                    currentUserRole={currentUserRole}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-[#1a1b26] border border-white/10 rounded-2xl overflow-hidden">
+                            <table className="w-full">
+                                <thead className="bg-white/5 border-b border-white/10">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            Member
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            Role
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            Joined
+                                        </th>
+                                        <th className="px-6 py-4 w-12"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredMembers.map(member => (
+                                        <MemberTableRow
+                                            key={member.id}
+                                            member={member}
+                                            onViewDetails={setSelectedMember}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
                 ) : (
                     <div className="text-center py-16 bg-[#1a1b26] border border-white/10 rounded-2xl">
                         <Icons.Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
