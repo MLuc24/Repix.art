@@ -49,6 +49,7 @@ import { ClientReviewPage } from './roles/freelancer/review/ClientReviewPage'; /
 import { ProjectDeliveryPage } from './roles/freelancer/delivery/ProjectDeliveryPage'; // IMPORT DELIVERY
 import { FreelancerDashboardPage } from './roles/freelancer/analytics/FreelancerDashboardPage'; // IMPORT FREELANCER ANALYTICS
 import { ClientCreditTrackingPage } from './roles/freelancer/billing/ClientCreditTrackingPage'; // IMPORT FREELANCER BILLING
+import { SettingsPage } from './features/settings/SettingsPage'; // IMPORT SETTINGS
 
 // --- CONSTANTS & CONFIG ---
 const NAV_LINKS = [
@@ -364,6 +365,7 @@ const App = () => {
       if (prev === 'pro') return 'freelancer';
       return 'casual';
     });
+    setCurrentView('dashboard');
   }
 
   const renderView = () => {
@@ -434,11 +436,11 @@ const App = () => {
         return <ClientReviewPage onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'profile':
-        return <ProfilePage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        return <ProfilePage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'notifications':
         return <NotificationsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'settings':
-        return <ProfilePage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        return <SettingsPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'editor':
         if (userRole === 'pro' || userRole === 'freelancer') {
           return <EditorProLite onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;

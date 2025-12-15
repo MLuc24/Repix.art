@@ -12,13 +12,18 @@ export const MOCK_PRO_STATS: UsageStat[] = [
 
 export const MOCK_DAILY_USAGE: DailyUsage[] = [
   { date: 'Mon', amount: 12 },
-  { date: 'Tue', amount: 45 }, // Peak
+  { date: 'Tue', amount: 45 }, 
   { date: 'Wed', amount: 18 },
   { date: 'Thu', amount: 24 },
   { date: 'Fri', amount: 8 },
   { date: 'Sat', amount: 32 },
   { date: 'Sun', amount: 5 },
 ];
+
+export const MOCK_DAILY_USAGE_30: DailyUsage[] = Array.from({ length: 30 }, (_, i) => ({
+  date: `${i + 1}`,
+  amount: Math.floor(Math.random() * 50) + 5
+}));
 
 export const MOCK_PRO_INSIGHTS: ProInsight[] = [
   {

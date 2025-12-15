@@ -10,12 +10,13 @@ import { BasicPreferencesPanel } from './components/BasicPreferencesPanel';
 import { ProfileQuickLinks } from './components/ProfileQuickLinks';
 
 interface ProfilePageProps {
+  user?: typeof MOCK_USER;
   onLogout: () => void; 
   onNavigate: (path: string) => void;
 }
 
-export const ProfilePage = ({ onLogout, onNavigate }: ProfilePageProps) => {
-  const user = MOCK_USER; 
+export const ProfilePage = ({ user: propUser, onLogout, onNavigate }: ProfilePageProps) => {
+  const user = propUser || MOCK_USER; 
 
   return (
     <DashboardLayout user={user} onLogout={onLogout} onNavigate={onNavigate} activePage="profile">

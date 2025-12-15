@@ -40,12 +40,6 @@ export const CasualMyImages = ({ onLogout, onNavigate }: { onLogout: () => void,
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 My Images <span className="text-slate-500 font-normal text-sm bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-white/5">{filteredAssets.length}</span>
               </h1>
-              <button 
-                onClick={() => onNavigate('upload')}
-                className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-xl text-sm font-bold hover:bg-violet-500 transition-colors shadow-lg shadow-violet-500/20"
-              >
-                <Icons.Upload className="w-4 h-4" /> Upload
-              </button>
            </div>
 
            <AssetFilterBar 

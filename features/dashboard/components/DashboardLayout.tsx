@@ -25,7 +25,7 @@ interface DashboardLayoutProps {
 const CASUAL_SIDEBAR_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
   { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
-  // Upload removed as per request
+  { id: 'upload', label: 'Upload', icon: <Icons.Upload className="w-5 h-5" /> },
   { id: 'remix', label: 'AI Remix', icon: <Icons.Sparkles className="w-5 h-5" /> },
   { id: 'marketplace', label: 'Templates', icon: <Icons.Grid className="w-5 h-5" /> },
   { id: 'backgrounds', label: 'Backgrounds', icon: <Icons.Image className="w-5 h-5" /> },
@@ -63,7 +63,29 @@ export const DashboardLayout = ({
   currentCredits,
   sidebarItems
 }: DashboardLayoutProps) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => document.body.classList.contains('dark'));
+  // Force default dark mode if not set, or otherwise sync with body
+  // Force default dark mode if not set, or otherwise sync with body and persistence
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // 1. Check persistence
+    const savedTheme = localStorage.getItem('theme_preference');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    // 2. Fallback: default to true as per user request
+    return true; 
+  });
+
+  // Effect to apply class and persist
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+      localStorage.setItem('theme_preference', 'dark');
+    } else {
+      document.body.classList.remove('dark');
+      localStorage.setItem('theme_preference', 'light');
+    }
+  }, [isDarkMode]);
+
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -81,13 +103,7 @@ export const DashboardLayout = ({
   const itemsToRender = getSidebarItems();
 
   const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    if (newMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
+    setIsDarkMode(prev => !prev);
   };
 
   return (
