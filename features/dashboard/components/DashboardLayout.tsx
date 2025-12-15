@@ -64,7 +64,8 @@ const TEAM_SIDEBAR_ITEMS = [
   { id: 'freelancer-analytics', label: 'Performance', icon: <Icons.TrendingUp className="w-5 h-5" /> },
   { id: 'freelancer-billing', label: 'Billing', icon: <Icons.CreditCard className="w-5 h-5" /> },
   { id: 'projects', label: 'Team Projects', icon: <Icons.Briefcase className="w-5 h-5" /> },
-  { id: 'my-images', label: 'Shared Assets', icon: <Icons.Image className="w-5 h-5" /> },
+  { id: 'team-assets', label: 'Team Assets', icon: <Icons.Folder className="w-5 h-5" /> },
+  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
   { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
   { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
 ];
@@ -76,7 +77,8 @@ const AGENCY_SIDEBAR_ITEMS = [
   { id: 'freelancer-analytics', label: 'Analytics', icon: <Icons.Activity className="w-5 h-5" /> },
   { id: 'freelancer-billing', label: 'Invoices', icon: <Icons.CreditCard className="w-5 h-5" /> },
   { id: 'projects', label: 'All Projects', icon: <Icons.Briefcase className="w-5 h-5" /> },
-  { id: 'my-images', label: 'Asset Library', icon: <Icons.Image className="w-5 h-5" /> },
+  { id: 'team-assets', label: 'Team Assets', icon: <Icons.Folder className="w-5 h-5" /> },
+  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
   { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
   { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
 ];

@@ -61,6 +61,9 @@ import { TeamDashboardPage } from './roles/team/dashboard';
 import { TeamActivityPage } from './roles/team/activity';
 // R4.5 Team Project Detail (Collab View)
 import { TeamProjectDetailPage } from './roles/team/projects';
+// R4.6 Team Assets Library
+import { TeamAssetsPage } from './roles/team/assets/TeamAssetsPage'; // IMPORT TEAM ASSETS
+
 
 // --- CONSTANTS & CONFIG ---
 const NAV_LINKS = [
@@ -340,7 +343,7 @@ const LandingPage = ({ onNavigate }: { onNavigate: (path: string, mode?: 'login'
   );
 };
 
-type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
+type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'team-assets' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
@@ -476,6 +479,13 @@ const App = () => {
           return <TeamActivityPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         // Fallback for non-team users
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.6 Team Assets
+      case 'team-assets':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamAssetsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'freelancer-billing':
