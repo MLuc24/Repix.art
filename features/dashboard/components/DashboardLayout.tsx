@@ -320,8 +320,10 @@ export const DashboardLayout = ({
               <span className="md:hidden text-sm font-bold text-slate-700 dark:text-white">{displayedCredits}</span>
             </div>
 
-            {/* R4.1 Team Switcher */}
-            <TeamSwitcher onCreateTeam={() => setIsCreateTeamModalOpen(true)} />
+            {/* R4.1 Team Switcher - Only visible for Team & Agency roles */}
+            {(user.role === 'team' || user.role === 'agency') && (
+              <TeamSwitcher onCreateTeam={() => setIsCreateTeamModalOpen(true)} />
+            )}
 
             <button
               onClick={toggleTheme}
