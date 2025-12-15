@@ -7,7 +7,7 @@ import { AssetFilterBar } from '../../../features/my-images/components/AssetFilt
 import { TeamFolderSidebar } from './TeamFolderSidebar';
 import { TeamAssetGrid } from './TeamAssetGrid';
 import { TeamAssetDetailPanel } from './TeamAssetDetailPanel';
-import { UploadToTeamModal } from './UploadToTeamModal';
+import { MultiSourceUploadModal } from '../../../features/upload-sync/components/MultiSourceUploadModal';
 import { AddToProjectModal } from './AddToProjectModal';
 import { TeamAssetItem, MOCK_TEAM_ASSETS } from './types';
 
@@ -141,7 +141,17 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
             </div>
 
             {isUploadModalOpen && (
-                <UploadToTeamModal onClose={() => setIsUploadModalOpen(false)} />
+                <MultiSourceUploadModal 
+                    isOpen={isUploadModalOpen} 
+                    onClose={() => setIsUploadModalOpen(false)} 
+                    onConfirm={(assets) => {
+                        console.log("Uploaded to Team:", assets);
+                        // Mock adding to team
+                        setIsUploadModalOpen(false);
+                        alert("Assets uploaded to Team successfully!");
+                    }}
+                    activeFolderName={activeFolderId ? activeFolderId : 'Team Assets'}
+                />
             )}
 
             {isAddToProjectModalOpen && (

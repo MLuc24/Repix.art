@@ -14,6 +14,7 @@ import { SyncLiteModal } from '../../../features/sync/components/SyncLiteModal';
 import { UploadDropzone } from '../../../features/upload-sync/components/UploadUI';
 import { FolderPickerModal, SyncProgressView } from '../../../features/upload-sync/components/SyncLiteUI';
 import { GlassModal, NeonButton } from '../../../shared/components/GlassUI';
+import { MultiSourceUploadModal } from '../../../features/upload-sync/components/MultiSourceUploadModal';
 
 
 export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
@@ -309,64 +310,17 @@ export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, on
         </div>
       </GlassModal>
 
-      {/* --- UPLOAD COMPONENT FAMILY (From Casual) --- */}
-      <GlassModal isOpen={isUploadSelectionOpen} onClose={() => setIsUploadSelectionOpen(false)}>
-        <div className="w-full max-w-2xl mx-auto">
-            <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Multi-Source Upload</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Import media from your device or cloud services.</p>
-            </div>
-
-            <div className="flex justify-center gap-2 mb-8 overflow-x-auto pb-2">
-                {[
-                    { id: 'local', label: 'Device', icon: Icons.Smartphone, color: 'violet' },
-                    { id: 'drive', label: 'Drive', icon: Icons.Google, color: 'blue' },
-                    { id: 'cloud', label: 'Cloud', icon: Icons.Cloud, color: 'cyan' },
-                    { id: 'link', label: 'Link', icon: Icons.Link, color: 'pink' },
-                ].map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveUploadTab(tab.id as any)}
-                        className={`
-                            flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold transition-all whitespace-nowrap
-                            ${activeUploadTab === tab.id 
-                                ? `bg-${tab.color}-100 dark:bg-${tab.color}-900/30 border-${tab.color}-500 text-${tab.color}-700 dark:text-${tab.color}-400` 
-                                : 'bg-transparent border-transparent hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                            }
-                        `}
-                    >
-                        <tab.icon className="w-4 h-4" />
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
-
-            <div className="min-h-[300px] flex flex-col">
-                {activeUploadTab === 'local' && (
-                    <div className="animate-fade-in">
-                        <UploadDropzone onFilesSelected={() => {
-                            setIsUploadSelectionOpen(false);
-                            setIsUploading(true);
-                        }} />
-                    </div>
-                )}
-                {/* Simplified other tabs for brevity, matching Casual logic structure */}
-                {activeUploadTab !== 'local' && (
-                     <div className="flex flex-col items-center justify-center h-full text-center">
-                         <p className="mb-4 text-slate-500">Connect to {activeUploadTab}...</p>
-                         <NeonButton onClick={() => { setIsUploadSelectionOpen(false); setIsUploading(true); }}>Connect</NeonButton>
-                     </div>
-                )}
-            </div>
-        </div>
-      </GlassModal>
-
-      <GlassModal isOpen={isUploading} onClose={() => {}}>
-         <SyncProgressView onComplete={() => {
-             setIsUploading(false);
-             setIsUploadSuccessOpen(true);
-         }} />
-      </GlassModal>
+      {/* --- UPLOAD COMPONENT (Shared) --- */}
+      <MultiSourceUploadModal 
+        isOpen={isUploadSelectionOpen}
+        onClose={() => setIsUploadSelectionOpen(false)}
+        onConfirm={(newAssets) => {
+            // In a real app, you would add these assets to your state or server
+            console.log("Uploaded assets:", newAssets);
+            setIsUploadSuccessOpen(true);
+        }}
+        activeFolderName={activeFolder ? (folders.find(f => f.id === activeFolder)?.name || 'Library') : 'Library'}
+      />
       
       <GlassModal isOpen={isUploadSuccessOpen} onClose={() => setIsUploadSuccessOpen(false)}>
          <div className="text-center p-6">

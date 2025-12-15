@@ -9,6 +9,7 @@ import { ProjectImageGrid } from './ProjectImageGrid';
 import { ProjectInfoPanel } from './ProjectInfoPanel';
 import { ProjectTimeline } from './ProjectTimeline';
 import { Icons } from '../../../shared/components/Icons';
+import { MultiSourceUploadModal } from '../../../features/upload-sync/components/MultiSourceUploadModal';
 
 type TabView = 'assets' | 'timeline';
 
@@ -17,6 +18,7 @@ export const ProjectDetailPage = ({ onLogout, onNavigate }: { onLogout: () => vo
   const [project, setProject] = useState<Project>(MOCK_PROJECTS[0]);
   const [assets, setAssets] = useState<ProjectAsset[]>(MOCK_PROJECT_ASSETS);
   const [activeTab, setActiveTab] = useState<TabView>('assets');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   
   const client = MOCK_CLIENTS.find(c => c.id === project.clientId);
 
@@ -30,7 +32,7 @@ export const ProjectDetailPage = ({ onLogout, onNavigate }: { onLogout: () => vo
       sessionStorage.setItem('gen_mode', 'image-to-image');
       onNavigate('generator');
     } else if (action === 'upload') {
-      onNavigate('upload');
+      setIsUploadModalOpen(true);
     }
   };
 
@@ -103,6 +105,28 @@ export const ProjectDetailPage = ({ onLogout, onNavigate }: { onLogout: () => vo
         <ProjectInfoPanel project={project} assetCount={assets.length} />
 
       </div>
+      {/* Upload Modal */}
+      <MultiSourceUploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)}
+        activeFolderName={project.title} 
+        onConfirm={(newAssets) => {
+           // Map AssetItem to ProjectAsset
+           const projectAssets: ProjectAsset[] = newAssets.map(a => ({
+               id: a.id,
+               src: a.src,
+               name: a.title, // Map title to name
+               type: 'upload',
+               status: 'approved', // Default
+               uploadDate: a.createdAt,
+               createdAt: a.createdAt,
+               size: '2MB',
+               dimension: '1920x1080'
+           }));
+           setAssets(prev => [...prev, ...projectAssets]);
+           setIsUploadModalOpen(false);
+        }}
+      />
     </DashboardLayout>
   );
 };

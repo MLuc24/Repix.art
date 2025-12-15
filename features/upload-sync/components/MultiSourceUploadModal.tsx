@@ -4,6 +4,7 @@ import { Icons } from '../../../shared/components/Icons';
 import { SyncProgressView } from './SyncLiteUI';
 import { UploadDropzone } from './UploadUI';
 import { AssetItem } from '../../my-images/types';
+import { connectToDrive, initGoogleDrive, listDriveFiles, DriveFile, downloadDriveFile, getUserInfo, GoogleUserInfo } from '../services/googleDriveService';
 
 interface MultiSourceUploadModalProps {
   isOpen: boolean;
@@ -12,46 +13,100 @@ interface MultiSourceUploadModalProps {
   activeFolderName: string;
 }
 
-// import { connectToDrive, initGoogleDrive, listDriveFiles, DriveFile, downloadDriveFile } from '../../services/googleDriveService';
-
 export const MultiSourceUploadModal = ({ isOpen, onClose, onConfirm, activeFolderName }: MultiSourceUploadModalProps) => {
   const [activeUploadTab, setActiveUploadTab] = useState<'local' | 'drive' | 'cloud' | 'link'>('local');
   const [isUploading, setIsUploading] = useState(false);
   const [pendingUploads, setPendingUploads] = useState<AssetItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   
-  // Mock Drive State
+  // Link Tab State
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkStatus, setLinkStatus] = useState<'idle' | 'checking' | 'valid' | 'error'>('idle');
+
+  // Real Drive State
   const [driveAuthState, setDriveAuthState] = useState<'idle' | 'loading' | 'connected' | 'error'>('idle');
+  const [driveFiles, setDriveFiles] = useState<DriveFile[]>([]);
+  const [driveToken, setDriveToken] = useState<string>('');
+  const [driveUser, setDriveUser] = useState<GoogleUserInfo | null>(null);
 
-  const MOCK_DRIVE_FILES = [
-    { id: 'd1', name: 'Vacation_001.jpg', thumbnailLink: 'https://images.unsplash.com/photo-1542206395-9feb3edaa68d?auto=format&fit=crop&w=300&q=80', mimeType: 'image/jpeg' },
-    { id: 'd2', name: 'Family_Dinner.jpg', thumbnailLink: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=300&q=80', mimeType: 'image/jpeg' },
-    { id: 'd3', name: 'Project_Logo.png', thumbnailLink: 'https://images.unsplash.com/photo-1626785774573-4b799314346d?auto=format&fit=crop&w=300&q=80', mimeType: 'image/png' },
-    { id: 'd4', name: 'Presentation.jpg', thumbnailLink: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=300&q=80', mimeType: 'image/jpeg' },
-    { id: 'd5', name: 'Conference.jpg', thumbnailLink: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=300&q=80', mimeType: 'image/jpeg' },
-    { id: 'd6', name: 'Team_Building.jpg', thumbnailLink: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=300&q=80', mimeType: 'image/jpeg' },
-  ];
+  React.useEffect(() => {
+      if (activeUploadTab === 'drive') {
+         initGoogleDrive().catch(console.error);
+      }
+  }, [activeUploadTab]);
 
-  const handleDriveConnect = () => {
-    setDriveAuthState('loading');
-    setTimeout(() => {
+  const handleDriveConnect = async () => {
+    try {
+        setDriveAuthState('loading');
+        const token = await connectToDrive();
+        setDriveToken(token);
+        
+        const [files, user] = await Promise.all([
+            listDriveFiles(token),
+            getUserInfo(token)
+        ]);
+
+        setDriveFiles(files);
+        setDriveUser(user);
         setDriveAuthState('connected');
-    }, 2000);
+    } catch (error) {
+        console.error("Drive connection failed:", error);
+        setDriveAuthState('error');
+    }
   };
 
-  // Render loop update
-  // ... inside render:
-  // {MOCK_DRIVE_FILES.map((file) => { ... onClick={...} ... })}
+  const handleSelectDriveFile = async (file: DriveFile) => {
+      if (selectedFiles.some(f => f.name === file.name)) return;
+
+      try {
+          const blob = await downloadDriveFile(file.id, driveToken);
+          const fauxFile = new File([blob], file.name, { type: file.mimeType });
+          setSelectedFiles(prev => [...prev, fauxFile]);
+      } catch (e) {
+          console.error("Failed to download file", e);
+      }
+  };
+
+  // ... handleUploadComplete, handleConfirm, handleDiscard keys ...
+
+// ...
+
+                                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                                            {driveFiles.map((file) => {
+                                                const isSelected = selectedFiles.some(f => f.name === file.name);
+                                                return (
+                                                    <div 
+                                                        key={file.id} 
+                                                        onClick={() => handleSelectDriveFile(file)}
+                                                        className={`
+                                                            relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all group
+                                                            ${isSelected ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-transparent hover:border-blue-300'}
+                                                        `}
+                                                    >
+                                                        {file.thumbnailLink && (
+                                                            <img src={file.thumbnailLink} alt={file.name} className="w-full h-full object-cover" />
+                                                        )}
+                                                        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                                                            {isSelected ? <Icons.Check className="w-6 h-6 text-white" /> : <Icons.Plus className="w-6 h-6 text-white" />}
+                                                        </div>
+                                                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent text-white text-[10px] truncate">
+                                                            {file.name}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
 
 
   const handleUploadComplete = () => {
     setIsUploading(false);
     
     // Create final assets
+    // Create final assets
     const newFiles: AssetItem[] = selectedFiles.map((file, idx) => ({
           id: `new_${Date.now()}_${idx}`,
           title: file.name,
-          src: URL.createObjectURL(file), // Used for preview
+          src: (file as any).externalUrl || URL.createObjectURL(file), // Support external links for preview
           source: 'upload',
           createdAt: new Date().toISOString(),
           folderId: '', 
@@ -209,34 +264,36 @@ export const MultiSourceUploadModal = ({ isOpen, onClose, onConfirm, activeFolde
                                 <div className="animate-fade-in h-full flex flex-col">
                                     <div className="flex items-center justify-between mb-4 px-2">
                                         <div className="flex items-center gap-2 text-sm text-slate-500">
-                                            <Icons.Google className="w-4 h-4" />
-                                            <span>/ My Drive / Photos</span>
+                                            {driveUser?.photoLink ? (
+                                                <img src={driveUser.photoLink} className="w-6 h-6 rounded-full" alt="avatar" />
+                                            ) : (
+                                                <Icons.Google className="w-4 h-4" />
+                                            )}
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{driveUser?.emailAddress || 'My Drive'}</span>
+                                                <span className="text-[10px] text-slate-400">/ Google Drive / Photos</span>
+                                            </div>
                                         </div>
                                         <button 
-                                            onClick={() => setDriveAuthState('idle')} 
-                                            className="text-xs text-red-500 hover:text-red-600 font-medium"
+                                            onClick={() => {
+                                                setDriveAuthState('idle');
+                                                setDriveUser(null);
+                                                setDriveFiles([]);
+                                            }} 
+                                            className="text-xs text-red-500 hover:text-red-600 font-bold px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/10 rounded transition-colors"
                                         >
-                                            Disconnect
+                                            Sign Out
                                         </button>
                                     </div>
                                     
-                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-1">
+                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-1 max-h-[400px]">
                                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                                            {MOCK_DRIVE_FILES.map((file) => {
+                                            {driveFiles.map((file) => {
                                                 const isSelected = selectedFiles.some(f => f.name === file.name);
                                                 return (
                                                     <div 
                                                         key={file.id} 
-                                                        onClick={() => {
-                                                            // Mock converting drive file to File object
-                                                            if (isSelected) return; // Prevent dupes for now
-                                                            fetch(file.thumbnailLink)
-                                                                .then(res => res.blob())
-                                                                .then(blob => {
-                                                                    const fauxFile = new File([blob], file.name, { type: 'image/jpeg' });
-                                                                    setSelectedFiles(prev => [...prev, fauxFile]);
-                                                                });
-                                                        }}
+                                                        onClick={() => handleSelectDriveFile(file)}
                                                         className={`
                                                             relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all group
                                                             ${isSelected ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-transparent hover:border-blue-300'}
@@ -287,25 +344,139 @@ export const MultiSourceUploadModal = ({ isOpen, onClose, onConfirm, activeFolde
                         </div>
                     )}
 
+
                     {activeUploadTab === 'link' && (
-                        <div className="animate-fade-in flex flex-col items-center justify-center h-full py-8 border-2 border-dashed border-pink-200 dark:border-pink-500/30 rounded-3xl bg-pink-50/50 dark:bg-pink-900/10">
-                            <div className="w-16 h-16 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-full flex items-center justify-center mb-4">
-                            <Icons.Link className="w-8 h-8" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Import via Link</h3>
-                            <p className="text-slate-500 dark:text-slate-400 mb-6 text-center max-w-xs text-sm">
-                            Paste a direct URL to an image file (JPG, PNG).
-                            </p>
-                            <div className="flex gap-2 w-full max-w-sm">
-                                <input 
-                                type="text" 
-                                placeholder="https://example.com/image.jpg"
-                                className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1b26] focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
+                        <div className="animate-fade-in flex flex-col items-center justify-center h-full py-8 border-2 border-dashed border-pink-200 dark:border-pink-500/30 rounded-3xl bg-pink-50/50 dark:bg-pink-900/10 transition-all">
+                            
+                            {/* Hidden Image for Validation */}
+                            {linkUrl && (
+                                <img 
+                                    src={linkUrl} 
+                                    className="hidden" 
+                                    onLoad={() => setLinkStatus('valid')} 
+                                    onError={() => setLinkStatus('error')} 
+                                    alt="check" 
                                 />
-                                <NeonButton onClick={() => { setIsUploading(true); }} className="!w-auto px-6 bg-pink-600 hover:bg-pink-700">
-                                    Import
+                            )}
+
+                            {linkStatus === 'valid' ? (
+                                <div className="mb-6 relative group w-64 aspect-video bg-black/5 rounded-xl overflow-hidden border-2 border-pink-500 shadow-lg animate-fade-in-up">
+                                     <img src={linkUrl} className="w-full h-full object-contain" alt="Preview" />
+                                     <button 
+                                        onClick={() => {
+                                            setLinkUrl('');
+                                            setLinkStatus('idle');
+                                        }}
+                                        className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full hover:bg-red-500 transition-colors"
+                                     >
+                                         <Icons.Times className="w-4 h-4" />
+                                     </button>
+                                     <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] truncate px-3">
+                                         {linkUrl}
+                                     </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="w-16 h-16 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-full flex items-center justify-center mb-4">
+                                        <Icons.Link className="w-8 h-8" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Import via Link</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 mb-6 text-center max-w-xs text-sm">
+                                    Paste a direct URL to an image file (JPG, PNG, WEBP).
+                                    </p>
+                                </>
+                            )}
+
+                            <div className="flex gap-2 w-full max-w-sm relative z-10">
+                                <input 
+                                    type="text" 
+                                    value={linkUrl}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && linkStatus === 'valid') {
+                                           // Trigger add
+                                           document.getElementById('add-link-btn')?.click();
+                                        }
+                                    }}
+                                    onChange={(e) => {
+                                        setLinkUrl(e.target.value);
+                                        setLinkStatus('checking');
+                                    }}
+                                    placeholder="https://example.com/image.webp"
+                                    className={`
+                                        flex-1 px-4 py-2 rounded-xl border bg-white dark:bg-[#1a1b26] focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm pr-10
+                                        ${linkStatus === 'error' ? 'border-red-500 text-red-500' : 'border-slate-200 dark:border-white/10'}
+                                    `}
+                                />
+                                {linkStatus === 'checking' && linkUrl && (
+                                    <div className="absolute right-[100px] top-3 w-4 h-4 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                                )}
+                                
+                                <NeonButton 
+                                    id="add-link-btn"
+                                    disabled={linkStatus !== 'valid'}
+                                    onClick={() => {
+                                        try {
+                                           fetch(linkUrl)
+                                            .then(res => res.blob())
+                                            .then(blob => {
+                                                const fileName = linkUrl.split('/').pop()?.split('?')[0] || `image_${Date.now()}.jpg`;
+                                                const file = new File([blob], fileName, { type: blob.type });
+                                                (file as any).externalUrl = linkUrl; 
+                                                setSelectedFiles(prev => [...prev, file]);
+                                                setLinkUrl('');
+                                                setLinkStatus('idle');
+                                            })
+                                            .catch(() => {
+                                                const fileName = linkUrl.split('/').pop()?.split('?')[0] || `image_${Date.now()}.jpg`;
+                                                const file = new File([""], fileName, { type: "image/jpeg" });
+                                                (file as any).externalUrl = linkUrl;
+                                                setSelectedFiles(prev => [...prev, file]);
+                                                setLinkUrl('');
+                                                setLinkStatus('idle');
+                                            });
+                                        } catch (e) {
+                                            console.error(e);
+                                        }
+                                    }} 
+                                    className={`!w-auto px-6 ${linkStatus !== 'valid' ? 'opacity-50 cursor-not-allowed bg-slate-400' : 'bg-pink-600 hover:bg-pink-700'}`}
+                                >
+                                    Add
                                 </NeonButton>
                             </div>
+                            {linkStatus === 'error' && (
+                                <p className="text-red-500 text-xs mt-2">Could not load image. Please check the URL.</p>
+                            )}
+
+                            {/* Added Links Queue */}
+                            {selectedFiles.length > 0 && (
+                                <div className="mt-8 w-full">
+                                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 px-1">
+                                        Prepared ({selectedFiles.length})
+                                    </h4>
+                                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 max-h-[200px] overflow-y-auto custom-scrollbar p-1">
+                                        {selectedFiles.map((file, idx) => (
+                                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden group bg-black/5 border border-slate-200 dark:border-white/10">
+                                                 <img 
+                                                    src={(file as any).externalUrl || URL.createObjectURL(file)} 
+                                                    className="w-full h-full object-cover" 
+                                                    alt="thumb" 
+                                                />
+                                                <button 
+                                                    onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))}
+                                                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <Icons.Times className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-6 flex justify-center animate-fade-in-up">
+                                        <NeonButton onClick={handleConfirm} className="!w-auto px-12 bg-pink-600 hover:bg-pink-700">
+                                            Start Import
+                                        </NeonButton>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
