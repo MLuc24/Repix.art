@@ -16,11 +16,13 @@ interface EditorLayoutProps {
   onRedo?: () => void;
   onReset?: () => void;
   onShare?: () => void;
+  isHistoryOpen?: boolean;
+  onToggleHistory?: () => void;
 }
 
 export const EditorLayout = ({ 
   onBack, tools, panels, canvas, promptBar, bottomDock, fileName = "Untitled_Project.jpg", onTogglePanel,
-  onUndo, onRedo, onReset, onShare 
+  onUndo, onRedo, onReset, onShare, isHistoryOpen = true, onToggleHistory
 }: EditorLayoutProps) => {
   return (
     <div className="h-screen w-full bg-[#0e0f13] flex flex-col overflow-hidden text-white font-sans">
@@ -82,11 +84,29 @@ export const EditorLayout = ({
       {/* --- 2. MAIN WORKSPACE --- */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* LEFT TOOLBAR - Modified for scrolling without visible scrollbar */}
-        <aside className="w-20 flex-none bg-[#0e0f13] border-r border-white/5 z-30 h-full">
-          <div className="h-full w-full overflow-y-auto no-scrollbar flex flex-col items-center py-4 gap-2">
-            {tools}
+        {/* LEFT SIDEBAR AREA (Fixed History) */}
+        <aside 
+          className={`flex-none z-30 h-full flex flex-col justify-start bg-[#0e0f13] border-r border-white/5 relative transition-all duration-300 ease-in-out
+            ${isHistoryOpen ? 'w-28' : 'w-0 border-none'}
+          `}
+        >
+          {/* HISTORY PANEL CONTAINER */}
+          <div className={`w-28 h-full transition-opacity duration-300 ${isHistoryOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none absolute'}`}>
+             {bottomDock}
           </div>
+
+          {/* TOGGLE BUTTON (Integrated vertical bar) */}
+          {onToggleHistory && (
+            <button
+               onClick={onToggleHistory}
+               className={`absolute top-1/2 -translate-y-1/2 z-50 w-4 h-12 bg-[#0e0f13] border border-l-0 border-white/10 rounded-r-md flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-all
+                 ${isHistoryOpen ? 'right-0 translate-x-full' : '-right-4'}
+               `}
+               title={isHistoryOpen ? "Close History" : "Open History"}
+            >
+               {isHistoryOpen ? <Icons.ChevronLeft className="w-3 h-3" /> : <Icons.ChevronLeft className="w-3 h-3 rotate-180" />}
+            </button>
+          )}
         </aside>
 
         {/* CENTER CANVAS AREA */}
@@ -94,21 +114,20 @@ export const EditorLayout = ({
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#1f2128_0%,_#15161b_100%)]" />
           
           {/* Canvas Wrapper */}
-          <div className="flex-1 w-full flex items-center justify-center relative z-10 p-4 pb-20">
+          <div className="flex-1 w-full flex items-center justify-center relative z-10 p-4">
              {canvas}
           </div>
 
-          {/* FLOATING PROMPT BAR (Optional) */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+            <div className="bg-[#1a1b1e]/90 backdrop-blur-xl border border-white/5 rounded-full p-1.5 shadow-2xl flex items-center gap-1.5 px-3">
+              {tools}
+            </div>
+          </div>
+
+          {/* FLOATING PROMPT BAR (Optional) - Moved slightly up to avoid collision if present */}
           {promptBar && (
             <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-full max-w-lg z-20 pointer-events-auto">
               {promptBar}
-            </div>
-          )}
-
-          {/* BOTTOM DOCK (History) */}
-          {bottomDock && (
-            <div className="absolute bottom-0 left-0 w-full z-30 pointer-events-auto">
-              {bottomDock}
             </div>
           )}
         </main>

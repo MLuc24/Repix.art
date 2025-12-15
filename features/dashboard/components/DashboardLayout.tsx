@@ -109,7 +109,6 @@ export const DashboardLayout = ({
   return (
     <div className="min-h-screen flex bg-slate-50 dark:bg-[#020617] transition-colors duration-300 font-sans overflow-x-hidden">
       
-      {/* --- MOBILE SIDEBAR BACKDROP --- */}
       {isMobileMenuOpen && (
         <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"

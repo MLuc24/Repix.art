@@ -112,6 +112,7 @@ export const EditorProLite = ({ onBack, onExport }: { onBack: () => void, onExpo
   const [historyIndex, setHistoryIndex] = useState(PRO_HISTORY_STEPS.length - 1);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(true); // Default open
+  const [isHistoryOpen, setIsHistoryOpen] = useState(true); // Left Panel (History)
   const [isShareOpen, setIsShareOpen] = useState(false);
 
   const [adjustments, setAdjustments] = useState({
@@ -230,7 +231,6 @@ export const EditorProLite = ({ onBack, onExport }: { onBack: () => void, onExpo
         isActive={activeTool === 'presets'} 
         onClick={() => handleToolClick('presets')} 
       />
-      <div className="h-px w-8 bg-white/10 my-2" />
       <ToolButton 
         icon={<Icons.Scissors />} 
         label="Mask" 
@@ -243,14 +243,8 @@ export const EditorProLite = ({ onBack, onExport }: { onBack: () => void, onExpo
         isActive={activeTool === 'crop'} 
         onClick={() => handleToolClick('crop')} 
       />
-      <div className="flex-1" />
       {/* Export button removed from here, exists in Header */}
-      <ToolButton 
-        icon={<Icons.Refresh />} 
-        label="History" 
-        isActive={activeTool === 'history'} 
-        onClick={() => handleToolClick('history')} 
-      />
+
     </>
   );
 
@@ -407,6 +401,76 @@ export const EditorProLite = ({ onBack, onExport }: { onBack: () => void, onExpo
     </GlassModal>
   );
 
+  // --- HISTORY SIDEBAR CONTENT (High Fidelity) ---
+  const renderHistorySidebar = () => (
+    <div className="flex flex-col h-full w-full font-sans">
+      
+      {/* Header (Vertical Compact) */}
+      <div className="flex-none flex flex-col items-center justify-center py-4 border-b border-white/5 bg-[#1a1b1e]/50 backdrop-blur-sm z-10 gap-1">
+        <div className="flex items-center gap-1.5 text-slate-200">
+           <Icons.Refresh className="w-3 h-3 text-violet-500" />
+           <span className="text-[9px] font-black tracking-widest uppercase">History</span>
+        </div>
+        <div className="text-[9px] font-mono text-slate-500">
+           {PRO_HISTORY_STEPS.length} VERSIONS
+        </div>
+      </div>
+
+      {/* Grid List */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2 grid grid-cols-1 gap-3 content-start">
+        {PRO_HISTORY_STEPS.slice().reverse().map((step, idx) => {
+           const originalIdx = PRO_HISTORY_STEPS.length - 1 - idx;
+           const actualStep = PRO_HISTORY_STEPS[originalIdx];
+           const isActive = originalIdx === historyIndex;
+           const version = originalIdx + 1;
+
+           return (
+             <div 
+               key={actualStep.id}
+               onClick={() => setHistoryIndex(originalIdx)}
+               className={`group relative w-full aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-300 shadow-md
+                 ${isActive 
+                   ? 'ring-2 ring-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.3)] z-10 scale-[1.02]' 
+                   : 'ring-1 ring-white/10 hover:ring-white/30 hover:shadow-lg'
+                 }
+               `}
+               title={`${actualStep.action} - ${actualStep.timestamp}`}
+             >
+                {/* Image */}
+                <img 
+                  src={`https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80`} 
+                  alt="Thumbnail" 
+                  className={`w-full h-full object-cover transition-transform duration-500 ${isActive ? 'scale-100' : 'scale-110 group-hover:scale-100 grayscale-[0.3]'}`}
+                />
+
+                {/* Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20 opacity-90" />
+                
+                {/* Top Left: Version Badge */}
+                <div className="absolute top-1.5 left-1.5">
+                   <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold border backdrop-blur-sm shadow-sm
+                     ${isActive ? 'bg-violet-600 text-white border-violet-500' : 'bg-black/40 text-slate-200 border-white/10'}
+                   `}>
+                     {version}
+                   </span>
+                </div>
+
+                {/* Bottom Info: Action Name (Truncated) */}
+                <div className="absolute bottom-0 left-0 right-0 p-1.5">
+                  <p className="text-[9px] font-bold text-white shadow-black drop-shadow-md truncate text-center leading-tight">
+                    {actualStep.action}
+                  </p>
+                </div>
+
+                {/* Active Indicator Ring */}
+                {isActive && <div className="absolute inset-0 ring-inset ring-2 ring-violet-500/0" />}
+             </div>
+           );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <EditorLayout 
@@ -415,12 +479,17 @@ export const EditorProLite = ({ onBack, onExport }: { onBack: () => void, onExpo
         // Condition panel rendering based on state
         panels={isSidePanelOpen ? <AIChatPanel onClose={() => setIsSidePanelOpen(false)} /> : null} 
         onTogglePanel={() => setIsSidePanelOpen(true)}
+        
+        isHistoryOpen={isHistoryOpen}
+        onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)}
+
         onUndo={handleUndo}
         onRedo={handleRedo}
         onReset={handleReset}
         onShare={() => setIsShareOpen(true)}
         canvas={CanvasArea}
         fileName="Portrait_Pro_Edit.psd"
+        bottomDock={renderHistorySidebar()} 
       />
       {ShareModal}
       

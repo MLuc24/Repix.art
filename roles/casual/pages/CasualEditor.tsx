@@ -143,6 +143,7 @@ export const CasualEditor = ({ onBack, onExport }: { onBack: () => void, onExpor
 
   // SIDEBAR STATE
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(true);
 
   // HEADER ACTIONS STATE
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -310,13 +311,74 @@ export const CasualEditor = ({ onBack, onExport }: { onBack: () => void, onExpor
         onClick={() => handleToolClick('filters')} 
       />
       <div className="flex-1" />
-      <ToolButton 
-        icon={<Icons.Refresh />} 
-        label="History" 
-        isActive={activeTool === 'history'} 
-        onClick={() => handleToolClick('history')} 
-      />
     </>
+  );
+
+  // --- HISTORY SIDEBAR (Like Pro) ---
+  const renderHistorySidebar = () => (
+    <div className="flex flex-col h-full w-full font-sans">
+      
+      {/* Header (Vertical Compact) */}
+      <div className="flex-none flex flex-col items-center justify-center py-4 border-b border-white/5 bg-[#1a1b1e]/50 backdrop-blur-sm z-10 gap-1">
+        <div className="flex items-center gap-1.5 text-slate-200">
+           <Icons.Refresh className="w-3 h-3 text-violet-500" />
+           <span className="text-[9px] font-black tracking-widest uppercase">History</span>
+        </div>
+        <div className="text-[9px] font-mono text-slate-500">
+           {historySteps.length} VERSIONS
+        </div>
+      </div>
+
+      {/* Grid List */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2 grid grid-cols-1 gap-3 content-start">
+        {historySteps.slice().reverse().map((step, idx) => {
+           const originalIdx = historySteps.length - 1 - idx;
+           const actualStep = historySteps[originalIdx];
+           const isActive = originalIdx === historyIndex;
+           const version = originalIdx + 1;
+
+           return (
+             <div 
+               key={actualStep.id}
+               onClick={() => setHistoryIndex(originalIdx)}
+               className={`group relative w-full aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-300 shadow-md
+                 ${isActive 
+                   ? 'ring-2 ring-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.3)] z-10 scale-[1.02]' 
+                   : 'ring-1 ring-white/10 hover:ring-white/30 hover:shadow-lg'
+                 }
+               `}
+               title={`${actualStep.label} - ${actualStep.timestamp}`}
+             >
+                {/* Image */}
+                <img 
+                  src={actualStep.thumbnail}
+                  alt="Thumbnail" 
+                  className={`w-full h-full object-cover transition-transform duration-500 ${isActive ? 'scale-100' : 'scale-110 group-hover:scale-100 grayscale-[0.3]'}`}
+                />
+
+                {/* Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20 opacity-90" />
+                
+                {/* Top Left: Version Badge */}
+                <div className="absolute top-1.5 left-1.5">
+                   <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold border backdrop-blur-sm shadow-sm
+                     ${isActive ? 'bg-violet-600 text-white border-violet-500' : 'bg-black/40 text-slate-200 border-white/10'}
+                   `}>
+                     {version}
+                   </span>
+                </div>
+
+                {/* Bottom Info: Action Name (Truncated) */}
+                <div className="absolute bottom-0 left-0 right-0 p-1.5">
+                  <p className="text-[9px] font-bold text-white shadow-black drop-shadow-md truncate text-center leading-tight">
+                    {actualStep.label}
+                  </p>
+                </div>
+             </div>
+           );
+        })}
+      </div>
+    </div>
   );
 
   // --- FLOATING WINDOW CONTENT ---
@@ -467,18 +529,7 @@ export const CasualEditor = ({ onBack, onExport }: { onBack: () => void, onExpor
           </FloatingToolPanel>
         );
 
-      case 'history':
-        return (
-          <FloatingToolPanel title="Edit History" onClose={() => setActiveTool(null)}>
-            <div className="p-6">
-              <HistoryList 
-                steps={historySteps} 
-                currentIndex={historyIndex} 
-                onSelectStep={(idx) => setHistoryIndex(idx)} 
-              />
-            </div>
-          </FloatingToolPanel>
-        );
+
 
       default:
         return null;
@@ -596,10 +647,15 @@ export const CasualEditor = ({ onBack, onExport }: { onBack: () => void, onExpor
         tools={renderTools()}
         panels={isSidePanelOpen ? <AIChatPanel onClose={() => setIsSidePanelOpen(false)} /> : null}
         onTogglePanel={() => setIsSidePanelOpen(true)}
+        
+        isHistoryOpen={isHistoryOpen}
+        onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)}
+
         onUndo={handleUndo}
         onRedo={handleRedo}
         onReset={handleReset}
         onShare={() => setIsShareOpen(true)}
+        bottomDock={renderHistorySidebar()}
         canvas={
           <>
             <div className="relative w-full h-full flex items-center justify-center">

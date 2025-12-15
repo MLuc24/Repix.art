@@ -108,24 +108,22 @@ interface ToolButtonProps {
 export const ToolButton = ({ icon, label, isActive, onClick }: ToolButtonProps) => (
   <button 
     onClick={onClick}
-    className="group relative flex flex-col items-center justify-center gap-1 w-full p-3 transition-all duration-300"
+    className="group relative flex items-center justify-center p-1 transition-all duration-300"
+    title={label}
   >
     <div className={`
-      p-3.5 rounded-2xl transition-all duration-300
+      w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
       ${isActive 
-        ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] scale-110' 
-        : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white hover:scale-105'
+        ? 'bg-[#ccff00] text-black shadow-lg shadow-[#ccff00]/20 scale-100 rotate-0' 
+        : 'text-slate-400 hover:text-white hover:bg-white/10'
       }
     `}>
-      {icon}
+      {React.cloneElement(icon as React.ReactElement, { className: `w-4 h-4 ${isActive ? 'text-black' : ''}` })}
     </div>
-    <span className={`text-[10px] font-medium transition-colors ${isActive ? 'text-violet-300' : 'text-slate-500 group-hover:text-slate-300'}`}>
+    
+    {/* Tooltip Label (since we are icon-only now) */}
+    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
       {label}
     </span>
-    
-    {/* Active Indicator Line */}
-    {isActive && (
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-violet-500 rounded-r-full shadow-[0_0_10px_rgba(139,92,246,0.8)]" />
-    )}
   </button>
 );

@@ -10,12 +10,14 @@ import { AssetFilterBar } from '../../../features/my-images/components/AssetFilt
 import { BatchActionBar } from '../components/my-images/BatchActionBar';
 import { FolderList } from '../components/my-images/FolderList';
 import { Icons } from '../../../shared/components/Icons';
+import { SyncLiteModal } from '../../../features/sync/components/SyncLiteModal';
 
 export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetItem | null>(null);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   
   // Batch State
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -57,7 +59,17 @@ export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, on
       <div className="flex h-[calc(100vh-140px)] overflow-hidden border-t border-slate-200 dark:border-white/5 -mt-4">
         
         {/* PRO SIDEBAR: FOLDERS */}
-        <div className="w-64 bg-white dark:bg-[#0e0f13] border-r border-slate-200 dark:border-white/5 hidden lg:block transition-colors">
+        <div className="w-64 bg-white dark:bg-[#0e0f13] border-r border-slate-200 dark:border-white/5 hidden lg:flex flex-col transition-colors">
+            {/* Custom Sync Button placed ABOVE folders */}
+            <div className="p-4 pb-0">
+                <button 
+                  onClick={() => setIsSyncModalOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-500/20 transition-all active:scale-95 group mb-2"
+                >
+                  <Icons.Smartphone className="w-4 h-4 group-hover:animate-pulse" /> Sync from Phone
+                </button>
+            </div>
+
            <FolderList 
              folders={MOCK_FOLDERS}
              activeId={activeFolder}
@@ -144,6 +156,7 @@ export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, on
         )}
 
       </div>
+      <SyncLiteModal isOpen={isSyncModalOpen} onClose={() => setIsSyncModalOpen(false)} onNavigate={onNavigate} />
     </DashboardLayout>
   );
 };
