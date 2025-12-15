@@ -4,6 +4,8 @@ import { Icons } from '../../../shared/components/Icons';
 import { Logo } from '../../../shared/components/Logo';
 import { MOCK_USER } from '../../../services/mock/dashboard';
 import { MOCK_NOTIFICATIONS } from '../../../services/mock/notifications';
+// R4.1 Team Foundation Components
+import { TeamSwitcher, TeamBadge, CreateTeamModal, useWorkspace } from '../../../roles/team/foundation';
 
 interface SidebarItem {
   id: string;
@@ -113,6 +115,8 @@ export const DashboardLayout = ({
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // R4.1 - Create Team Modal state
+  const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
 
   const displayedCredits = currentCredits !== undefined ? currentCredits : user.credits;
 
@@ -270,7 +274,11 @@ export const DashboardLayout = ({
           </button>
 
           <div className="hidden lg:flex flex-col w-64">
-            <h1 className="text-lg font-bold text-slate-800 dark:text-white truncate">Welcome back, {user.name.split(' ')[0]} 👋</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-slate-800 dark:text-white truncate">Welcome back, {user.name.split(' ')[0]} 👋</h1>
+              {/* R4.1 Team Badge */}
+              <TeamBadge size="sm" />
+            </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Ready to create something amazing?</p>
           </div>
 
@@ -297,6 +305,9 @@ export const DashboardLayout = ({
               <span className="hidden md:inline text-sm font-bold text-slate-700 dark:text-white">{displayedCredits} Credits</span>
               <span className="md:hidden text-sm font-bold text-slate-700 dark:text-white">{displayedCredits}</span>
             </div>
+
+            {/* R4.1 Team Switcher */}
+            <TeamSwitcher onCreateTeam={() => setIsCreateTeamModalOpen(true)} />
 
             <button
               onClick={toggleTheme}
@@ -342,6 +353,12 @@ export const DashboardLayout = ({
         </main>
 
       </div>
+
+      {/* R4.1 Create Team Modal */}
+      <CreateTeamModal
+        isOpen={isCreateTeamModalOpen}
+        onClose={() => setIsCreateTeamModalOpen(false)}
+      />
     </div>
   );
 };

@@ -53,6 +53,8 @@ import { SettingsPage } from './features/settings/SettingsPage'; // IMPORT SETTI
 // TEAM & AGENCY ROLE IMPORTS - reuse freelancer components with different user context
 import { TeamProjectsPage } from './roles/team/pages/TeamProjectsPage'; // IMPORT TEAM PROJECTS
 import { AgencyProjectsPage } from './roles/agency/pages/AgencyProjectsPage'; // IMPORT AGENCY PROJECTS
+// R4.1 Team Foundation - WorkspaceProvider for managing Personal/Team context
+import { WorkspaceProvider } from './roles/team/foundation';
 
 // --- CONSTANTS & CONFIG ---
 const NAV_LINKS = [
@@ -558,5 +560,10 @@ const App = () => {
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
-  root.render(<App />);
+  // R4.1 - Wrap the app with WorkspaceProvider for Team Mode context
+  root.render(
+    <WorkspaceProvider>
+      <App />
+    </WorkspaceProvider>
+  );
 }
