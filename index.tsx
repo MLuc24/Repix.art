@@ -59,6 +59,8 @@ import { WorkspaceProvider } from './roles/team/foundation';
 import { TeamDashboardPage } from './roles/team/dashboard';
 // R4.3 Team Activity Feed
 import { TeamActivityPage } from './roles/team/activity';
+// R4.5 Team Project Detail (Collab View)
+import { TeamProjectDetailPage } from './roles/team/projects';
 
 // --- CONSTANTS & CONFIG ---
 const NAV_LINKS = [
@@ -444,8 +446,12 @@ const App = () => {
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'project-detail':
-        // Team and Agency also use project detail (shared from freelancer)
-        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // R4.5 Team uses collaborative project detail
+        if (userRole === 'team') {
+          return <TeamProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        // Freelancer and Agency use standard project detail
+        if (userRole === 'freelancer' || userRole === 'agency') {
           return <ProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <FreelancerProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
