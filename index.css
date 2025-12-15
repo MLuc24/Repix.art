@@ -34,3 +34,22 @@
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+/* Hide Scrollbar on Desktop/Laptop but keep scroll functionality */
+@media (min-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+    display: none;
+  }
+  
+  html, body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
