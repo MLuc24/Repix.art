@@ -42,7 +42,7 @@ import { OnboardingPage } from './features/onboarding/OnboardingPage'; // IMPORT
 import { ProfilePage } from './features/profile/ProfilePage'; // IMPORT PROFILE
 import { NotificationsPage } from './features/notifications/NotificationsPage'; // IMPORT NOTIFICATIONS
 import { PRICING_TIERS } from './services/mock/credits'; // IMPORT SHARED MOCK DATA
-import { MOCK_USER, MOCK_PRO_USER, MOCK_FREELANCER_USER } from './services/mock/dashboard'; // IMPORT MOCK USER
+import { MOCK_USER, MOCK_PRO_USER, MOCK_FREELANCER_USER, MOCK_TEAM_USER, MOCK_AGENCY_USER } from './services/mock/dashboard'; // IMPORT MOCK USERS
 import { FreelancerProjectsPage } from './roles/freelancer/pages/FreelancerProjectsPage'; // IMPORT FREELANCER PROJECTS
 import { ProjectDetailPage } from './roles/freelancer/projects/ProjectDetailPage'; // IMPORT PROJECT DETAIL
 import { ClientReviewPage } from './roles/freelancer/review/ClientReviewPage'; // IMPORT CLIENT REVIEW
@@ -50,6 +50,26 @@ import { ProjectDeliveryPage } from './roles/freelancer/delivery/ProjectDelivery
 import { FreelancerDashboardPage } from './roles/freelancer/analytics/FreelancerDashboardPage'; // IMPORT FREELANCER ANALYTICS
 import { ClientCreditTrackingPage } from './roles/freelancer/billing/ClientCreditTrackingPage'; // IMPORT FREELANCER BILLING
 import { SettingsPage } from './features/settings/SettingsPage'; // IMPORT SETTINGS
+// TEAM & AGENCY ROLE IMPORTS - reuse freelancer components with different user context
+import { TeamProjectsPage } from './roles/team/pages/TeamProjectsPage'; // IMPORT TEAM PROJECTS
+import { AgencyProjectsPage } from './roles/agency/pages/AgencyProjectsPage'; // IMPORT AGENCY PROJECTS
+// R4.1 Team Foundation - WorkspaceProvider for managing Personal/Team context
+import { WorkspaceProvider } from './roles/team/foundation';
+// R4.2 Team Dashboard
+import { TeamDashboardPage } from './roles/team/dashboard';
+// R4.3 Team Activity Feed
+import { TeamActivityPage } from './roles/team/activity';
+// R4.5 Team Project Detail (Collab View)
+import { TeamProjectDetailPage } from './roles/team/projects';
+// R4.6 Team Assets Library
+import { TeamAssetsPage } from './roles/team/assets/TeamAssetsPage'; // IMPORT TEAM ASSETS
+// R4.7 Brand Kit Lite
+import { BrandKitPage } from './roles/team/brand/BrandKitPage'; // IMPORT BRAND KIT
+// R4.8 Team Roles & Permissions
+import { TeamMembersPage } from './roles/team/permissions/TeamMembersPage'; // IMPORT TEAM MEMBERS
+// R4.9 Team Credits & Billing
+import { TeamBillingPage } from './roles/team/billing/TeamBillingPage'; // IMPORT TEAM BILLING
+
 
 // --- CONSTANTS & CONFIG ---
 const NAV_LINKS = [
@@ -92,14 +112,14 @@ const FEATURES = [
 
 // --- SHARED UI COMPONENTS (Landing Specific) ---
 
-const Button = ({ 
-  children, 
-  variant = 'primary', 
+const Button = ({
+  children,
+  variant = 'primary',
   className = "",
-  ...props 
+  ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'outline' | 'ghost' }) => {
   const baseStyles = "relative px-8 py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 overflow-hidden group";
-  
+
   const variants = {
     primary: "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-xl shadow-violet-500/20 hover:shadow-violet-500/40 border border-white/10",
     outline: "bg-transparent border border-white/20 text-slate-300 hover:border-violet-500 hover:text-white hover:bg-violet-500/10 hover:shadow-lg hover:shadow-violet-500/10",
@@ -146,23 +166,23 @@ const Hero = ({ onCtaClick, onWatchDemo }: { onCtaClick: () => void, onWatchDemo
         </span>
       </h1>
       <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto md:mx-0 leading-relaxed">
-        Professional editing, creative remixing, and team collaboration in one powerful platform. 
+        Professional editing, creative remixing, and team collaboration in one powerful platform.
         Join 2M+ creators turning imagination into reality.
       </p>
-      
+
       <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
-        <ShimmerButton 
-          onClick={onCtaClick} 
+        <ShimmerButton
+          onClick={onCtaClick}
           wrapperClassName="w-full sm:w-auto shadow-violet-500/25"
           className="rounded-xl"
           backgroundClassName="bg-gradient-to-tr from-violet-600 to-indigo-500 group-hover:brightness-110"
           shimmerColor="#ffffff"
         >
-           <span className="px-10 py-4 text-lg font-bold flex items-center gap-2">Start Editing Free <Icons.Wand className="w-5 h-5"/></span>
+          <span className="px-10 py-4 text-lg font-bold flex items-center gap-2">Start Editing Free <Icons.Wand className="w-5 h-5" /></span>
         </ShimmerButton>
-        <button 
-           className="relative w-full sm:w-auto px-10 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 overflow-hidden group border border-white/20 text-slate-300 hover:border-violet-500 hover:text-white hover:bg-violet-500/10 hover:shadow-lg hover:shadow-violet-500/10" 
-           onClick={onWatchDemo}
+        <button
+          className="relative w-full sm:w-auto px-10 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 overflow-hidden group border border-white/20 text-slate-300 hover:border-violet-500 hover:text-white hover:bg-violet-500/10 hover:shadow-lg hover:shadow-violet-500/10"
+          onClick={onWatchDemo}
         >
           <Icons.Play className="w-5 h-5 group-hover:text-red-500 transition-colors" />
           Watch Demo
@@ -171,9 +191,9 @@ const Hero = ({ onCtaClick, onWatchDemo }: { onCtaClick: () => void, onWatchDemo
 
       <div className="mt-10 flex items-center justify-center md:justify-start gap-4 text-sm text-slate-500 font-medium">
         <div className="flex -space-x-2">
-          {[1,2,3,4].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <div key={i} className="w-8 h-8 rounded-full border-2 border-[#020617] bg-slate-700 overflow-hidden">
-               <img src={`https://i.pravatar.cc/100?img=${10+i}`} alt="user" className="w-full h-full object-cover" />
+              <img src={`https://i.pravatar.cc/100?img=${10 + i}`} alt="user" className="w-full h-full object-cover" />
             </div>
           ))}
         </div>
@@ -184,12 +204,12 @@ const Hero = ({ onCtaClick, onWatchDemo }: { onCtaClick: () => void, onWatchDemo
     <div className="flex-1 relative w-full max-w-xl preserve-3d perspective-1000">
       <div className="absolute inset-0 bg-gradient-to-tr from-violet-600/30 to-blue-600/30 blur-[100px] -z-10 animate-pulse-slow" />
       <div className="relative z-10 bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-4 shadow-2xl shadow-black/80 transform hover:rotate-y-2 transition-transform duration-500 ring-1 ring-white/10">
-        <img 
-          src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80" 
-          alt="App Interface" 
+        <img
+          src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80"
+          alt="App Interface"
           className="rounded-lg shadow-lg border border-white/5"
         />
-        
+
         {/* Floating UI Elements */}
         <div className="absolute -right-6 top-10 bg-[#1e293b] backdrop-blur-xl p-4 rounded-2xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)] flex items-center gap-4 animate-float" style={{ animationDelay: '0s' }}>
           <div className="p-3 bg-violet-600 rounded-xl shadow-lg shadow-violet-500/30"><Icons.Bolt className="w-5 h-5 text-white" /></div>
@@ -228,14 +248,14 @@ const MarketplaceSection = ({ onCtaClick, onSellClick }: { onCtaClick: () => voi
         <br className="hidden md:block" />
         Filter by rating, author, or tags to find the perfect asset for your project.
       </p>
-        <div className="flex items-center justify-center gap-4">
-          <Button onClick={onCtaClick} className="rounded-full px-8 py-4 text-base shadow-violet-500/20">
-            Browse All Assets
-          </Button>
-          <Button onClick={onSellClick} variant="outline" className="rounded-full px-8 py-4 text-base">
-            Sell Your Work
-          </Button>
-        </div>
+      <div className="flex items-center justify-center gap-4">
+        <Button onClick={onCtaClick} className="rounded-full px-8 py-4 text-base shadow-violet-500/20">
+          Browse All Assets
+        </Button>
+        <Button onClick={onSellClick} variant="outline" className="rounded-full px-8 py-4 text-base">
+          Sell Your Work
+        </Button>
+      </div>
     </div>
 
     <div className="h-[600px] w-full -mt-20 relative z-0">
@@ -252,90 +272,91 @@ const LandingPage = ({ onNavigate }: { onNavigate: (path: string, mode?: 'login'
   const [showDemo, setShowDemo] = useState(false);
 
   return (
-  // Force dark mode: 'dark' class enables tailwind dark mode, bg-[#020617] overrides body light bg
-  <div className="min-h-screen dark bg-[#020617] text-white"> 
-    <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-[#020617] -z-20" />
-    <LandingMarquee />
-    <Header 
-      onLoginClick={() => onNavigate('auth', 'login')} 
-      onSignupClick={() => onNavigate('auth', 'register')} 
-    />
-    <main className="text-white">
-      <Hero onCtaClick={() => onNavigate('auth', 'register')} onWatchDemo={() => setShowDemo(true)} />
-      <PartnersMarquee />
-      <ShowcaseSection 
-        onCtaClick={() => onNavigate('auth', 'register')} 
-        onGalleryClick={() => {
-          const element = document.getElementById('marketplace');
-          if (element) {
-             element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }}
+    // Force dark mode: 'dark' class enables tailwind dark mode, bg-[#020617] overrides body light bg
+    <div className="min-h-screen dark bg-[#020617] text-white">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-[#020617] -z-20" />
+      <LandingMarquee />
+      <Header
+        onLoginClick={() => onNavigate('auth', 'login')}
+        onSignupClick={() => onNavigate('auth', 'register')}
       />
-      <Features3D />
-      <RemixSection 
-        onCtaClick={() => onNavigate('auth', 'register')} 
-        onGalleryClick={() => {
-          const element = document.getElementById('marketplace');
-          if (element) {
-             element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }}
-      />
-      <MarketplaceSection 
-        onCtaClick={() => onNavigate('auth', 'login')} 
-        onSellClick={() => onNavigate('auth', 'register')}
-      />
-      <Pricing3D onCtaClick={() => onNavigate('auth', 'register')} />
-      
-      <GlassModal 
-        isOpen={showDemo} 
-        onClose={() => setShowDemo(false)} 
-        className="!bg-transparent !p-0 !border-0 !shadow-none max-w-7xl w-full mx-auto"
-      >
-        <div className="relative group perspective-1000">
-           {/* Ambient Glow - Adjusted for transparency */}
-           <div className="absolute -inset-1 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 rounded-[32px] blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000" />
-           
-           {/* Monitor Frame - Glass Effect */}
-           <div className="relative bg-white/5 backdrop-blur-2xl rounded-[32px] p-2 md:p-4 border border-white/10 shadow-2xl ring-1 ring-white/10">
+      <main className="text-white">
+        <Hero onCtaClick={() => onNavigate('auth', 'register')} onWatchDemo={() => setShowDemo(true)} />
+        <PartnersMarquee />
+        <ShowcaseSection
+          onCtaClick={() => onNavigate('auth', 'register')}
+          onGalleryClick={() => {
+            const element = document.getElementById('marketplace');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+        />
+        <Features3D />
+        <RemixSection
+          onCtaClick={() => onNavigate('auth', 'register')}
+          onGalleryClick={() => {
+            const element = document.getElementById('marketplace');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+        />
+        <MarketplaceSection
+          onCtaClick={() => onNavigate('auth', 'login')}
+          onSellClick={() => onNavigate('auth', 'register')}
+        />
+        <Pricing3D onCtaClick={() => onNavigate('auth', 'register')} />
+
+        <GlassModal
+          isOpen={showDemo}
+          onClose={() => setShowDemo(false)}
+          className="!bg-transparent !p-0 !border-0 !shadow-none max-w-7xl w-full mx-auto"
+        >
+          <div className="relative group perspective-1000">
+            {/* Ambient Glow - Adjusted for transparency */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 rounded-[32px] blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-1000" />
+
+            {/* Monitor Frame - Glass Effect */}
+            <div className="relative bg-white/5 backdrop-blur-2xl rounded-[32px] p-2 md:p-4 border border-white/10 shadow-2xl ring-1 ring-white/10">
               {/* Screen Glare/Reflection */}
               <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent rounded-t-[28px] pointer-events-none z-20 opacity-30" />
-              
+
               {/* Inner Bezel */}
               <div className="relative rounded-[24px] overflow-hidden bg-black/80 shadow-inner border border-white/5">
                 <div className="relative pt-[56.25%]">
-                    <iframe 
-                      src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1" 
-                      title="REPIX Demo"
-                      className="absolute inset-0 w-full h-full rounded-[24px]"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                  <iframe
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1"
+                    title="REPIX Demo"
+                    className="absolute inset-0 w-full h-full rounded-[24px]"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </div>
               </div>
-              
+
               {/* Bottom Chin */}
               <div className="h-4 md:h-6 flex items-center justify-center opacity-50">
-                 <div className="w-1 h-1 rounded-full bg-white/50 mx-auto box-content border border-white/20 p-0.5" />
+                <div className="w-1 h-1 rounded-full bg-white/50 mx-auto box-content border border-white/20 p-0.5" />
               </div>
-           </div>
-        </div>
-      </GlassModal>
-    </main>
-    <Footer />
-  </div>
+            </div>
+          </div>
+        </GlassModal>
+      </main>
+      <Footer />
+    </div>
   );
 };
 
-type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing';
+type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'team-assets' | 'brand-kit' | 'team-members' | 'team-billing' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
-  const [userRole, setUserRole] = useState<'casual' | 'pro' | 'freelancer'>('casual');
+  // Extended role types: casual → pro → freelancer → team → agency
+  const [userRole, setUserRole] = useState<'casual' | 'pro' | 'freelancer' | 'team' | 'agency'>('casual');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  
+
   // Lifted User State
   const [userCredits, setUserCredits] = useState(MOCK_USER.credits);
 
@@ -346,24 +367,35 @@ const App = () => {
   const handleOnboardingFinish = (selectedRole: string) => {
     // Determine which role to set based on ID
     if (selectedRole === 'agency') {
-       setUserRole('freelancer'); // Mapping agency to freelance for now for demo
-    } else if (selectedRole === 'pro' || selectedRole === 'team') {
-       setUserRole('pro');
+      setUserRole('agency');
+    } else if (selectedRole === 'team') {
+      setUserRole('team');
+    } else if (selectedRole === 'freelancer') {
+      setUserRole('freelancer');
+    } else if (selectedRole === 'pro') {
+      setUserRole('pro');
     } else {
-       setUserRole('casual');
+      setUserRole('casual');
     }
     setCurrentView('dashboard');
   }
 
   // Determine current user object based on role
-  const currentUser = userRole === 'freelancer' ? MOCK_FREELANCER_USER : userRole === 'pro' ? MOCK_PRO_USER : MOCK_USER;
+  const currentUser =
+    userRole === 'agency' ? MOCK_AGENCY_USER :
+      userRole === 'team' ? MOCK_TEAM_USER :
+        userRole === 'freelancer' ? MOCK_FREELANCER_USER :
+          userRole === 'pro' ? MOCK_PRO_USER :
+            MOCK_USER;
 
-  // Toggle role logic
+  // Toggle role logic: casual → pro → freelancer → team → agency → casual
   const handleRoleToggle = () => {
     setUserRole(prev => {
       if (prev === 'casual') return 'pro';
       if (prev === 'pro') return 'freelancer';
-      return 'casual';
+      if (prev === 'freelancer') return 'team';
+      if (prev === 'team') return 'agency';
+      return 'casual'; // agency → casual
     });
     setCurrentView('dashboard');
   }
@@ -372,62 +404,121 @@ const App = () => {
     switch (currentView) {
       case 'landing':
         return <LandingPage onNavigate={(path, mode) => {
-           if (mode) {
-             setAuthMode(mode);
-           } else if (path === 'auth') {
-             setAuthMode('login'); // Default
-           }
-           setCurrentView(path as ViewState);
+          if (mode) {
+            setAuthMode(mode);
+          } else if (path === 'auth') {
+            setAuthMode('login'); // Default
+          }
+          setCurrentView(path as ViewState);
         }} />;
       case 'auth':
-        return <AuthPage 
-            initialMode={authMode} 
-            onBack={() => setCurrentView('landing')} 
-            onLoginSuccess={() => setCurrentView('onboarding')} 
+        return <AuthPage
+          initialMode={authMode}
+          onBack={() => setCurrentView('landing')}
+          onLoginSuccess={() => setCurrentView('onboarding')}
         />;
       case 'onboarding':
         return <OnboardingPage onFinish={handleOnboardingFinish} onBack={() => {
-            setAuthMode('login');
-            setCurrentView('auth');
+          setAuthMode('login');
+          setCurrentView('auth');
         }} />;
       case 'dashboard':
-        if (userRole === 'pro' || userRole === 'freelancer') {
-           // Both Pro and Freelancer use ProDashboard, but Freelancer gets extra flag
-           return <ProDashboard 
-             onLogout={() => setCurrentView('landing')} 
-             onNavigate={(path) => setCurrentView(path as ViewState)} 
-             isFreelancer={userRole === 'freelancer'}
-           />;
+        // R4.2 Team Dashboard - Show Team-specific dashboard for Team role
+        if (userRole === 'team') {
+          return <TeamDashboardPage
+            onLogout={() => setCurrentView('landing')}
+            onNavigate={(path) => setCurrentView(path as ViewState)}
+          />;
+        }
+        // Pro, Freelancer, Agency use ProDashboard (advanced dashboard)
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'agency') {
+          // Freelancer, Agency get the isFreelancer flag for freelancer-style features
+          return <ProDashboard
+            onLogout={() => setCurrentView('landing')}
+            onNavigate={(path) => setCurrentView(path as ViewState)}
+            isFreelancer={userRole === 'freelancer' || userRole === 'agency'}
+          />;
         }
         return <CasualDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} userCredits={userCredits} />;
-      
-      case 'projects': 
+
+      case 'projects':
+        // Route to appropriate Projects page based on role
+        if (userRole === 'agency') {
+          return <AgencyProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        if (userRole === 'team') {
+          return <TeamProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
         if (userRole === 'freelancer') {
           return <FreelancerProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'project-detail':
-        if (userRole === 'freelancer') {
-           return <ProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        // R4.5 Team uses collaborative project detail
+        if (userRole === 'team') {
+          return <TeamProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        // Freelancer and Agency use standard project detail
+        if (userRole === 'freelancer' || userRole === 'agency') {
+          return <ProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <FreelancerProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'delivery':
-        if (userRole === 'freelancer') {
-           return <ProjectDeliveryPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        // Team and Agency also use delivery page
+        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+          return <ProjectDeliveryPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <FreelancerProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
-      case 'freelancer-analytics': 
-        if (userRole === 'freelancer') {
-           return <FreelancerDashboardPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+      case 'freelancer-analytics':
+        // Team and Agency also use analytics page
+        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+          return <FreelancerDashboardPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
-      case 'freelancer-billing': // NEW ROUTE
-        if (userRole === 'freelancer') {
-           return <ClientCreditTrackingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+      // R4.3 Team Activity Feed
+      case 'team-activity':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamActivityPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        // Fallback for non-team users
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.6 Team Assets
+      case 'team-assets':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamAssetsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.7 Brand Kit
+      case 'brand-kit':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <BrandKitPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.8 Team Members & Permissions
+      case 'team-members':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamMembersPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.9 Team Credits & Billing
+      case 'team-billing':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamBillingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      case 'freelancer-billing':
+        // Team and Agency also use billing page
+        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+          return <ClientCreditTrackingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
@@ -442,31 +533,32 @@ const App = () => {
       case 'settings':
         return <SettingsPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'editor':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        // Pro, Freelancer, Team, Agency all use Pro Editor
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <EditorProLite onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;
         }
         return <CasualEditor onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;
       case 'export':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <ProExport onBack={() => setCurrentView('editor')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualExport onBack={() => setCurrentView('editor')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'remix':
         return <CasualRemix user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'marketplace':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <ProMarketplace user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualMarketplace user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'avatar':
         return <CasualAvatar user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'backgrounds':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <BackgroundPacksProPanel user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualBackgrounds user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'upload':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <ProUpload onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualUpload user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
@@ -474,7 +566,7 @@ const App = () => {
         // Only accessible in Pro usually, but fallback if Casual tries to access (could redirect)
         return <AutoAlbumProPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'sync-pro':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <SyncProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         // Fallback for casual
@@ -482,25 +574,25 @@ const App = () => {
       case 'credits':
         return <CasualCredits onNavigate={(path) => setCurrentView(path as ViewState)} onAddCredits={handleAddCredits} />;
       case 'credits-log':
-        // Use Pro Log for Pro Users, Casual Log for Casual Users
-        if (userRole === 'pro' || userRole === 'freelancer') {
-           return <CreditUsageLogProPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        // Use Pro Log for Pro, Freelancer, Team, Agency
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+          return <CreditUsageLogProPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualCreditsLog onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'subscription':
         return <CasualSubscription user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => {
-           if (path === 'dashboard' || path === 'auth') {
-             // Logic for upgrade
-           }
-           setCurrentView(path as ViewState)
+          if (path === 'dashboard' || path === 'auth') {
+            // Logic for upgrade
+          }
+          setCurrentView(path as ViewState)
         }} />;
       case 'generator':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <ProGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'my-images':
-        if (userRole === 'pro' || userRole === 'freelancer') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <ProMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
@@ -514,12 +606,12 @@ const App = () => {
       {/* Dev Tool to Switch Roles - Only visible in authenticated dashboard views */}
       {currentView !== 'landing' && currentView !== 'auth' && currentView !== 'onboarding' && (
         <div className="fixed bottom-4 right-4 z-[9999] opacity-50 hover:opacity-100 transition-opacity">
-           <button 
-             onClick={handleRoleToggle}
-             className="bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-white/20"
-           >
-             Switch Role: {userRole.toUpperCase()}
-           </button>
+          <button
+            onClick={handleRoleToggle}
+            className="bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-white/20"
+          >
+            Switch Role: {userRole.toUpperCase()}
+          </button>
         </div>
       )}
       {renderView()}
@@ -530,5 +622,10 @@ const App = () => {
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
-  root.render(<App />);
+  // R4.1 - Wrap the app with WorkspaceProvider for Team Mode context
+  root.render(
+    <WorkspaceProvider>
+      <App />
+    </WorkspaceProvider>
+  );
 }

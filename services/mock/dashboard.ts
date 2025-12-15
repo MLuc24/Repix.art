@@ -23,6 +23,24 @@ export const MOCK_FREELANCER_USER = {
   email: "david@studio.com"
 };
 
+// Team role - extends Freelancer with team collaboration
+export const MOCK_TEAM_USER = {
+  name: "Team Admin",
+  role: "team",
+  avatar: "https://i.pravatar.cc/150?img=32",
+  credits: 5420,
+  email: "admin@designteam.com",
+};
+
+// Agency role - extends Team with multi-client features
+export const MOCK_AGENCY_USER = {
+  name: "Agency Owner",
+  role: "agency",
+  avatar: "https://i.pravatar.cc/150?img=45",
+  credits: 15000,
+  email: "owner@agency.com",
+};
+
 export const RECENT_FILES = [
   {
     id: 1,
