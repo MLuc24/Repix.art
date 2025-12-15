@@ -55,6 +55,10 @@ import { TeamProjectsPage } from './roles/team/pages/TeamProjectsPage'; // IMPOR
 import { AgencyProjectsPage } from './roles/agency/pages/AgencyProjectsPage'; // IMPORT AGENCY PROJECTS
 // R4.1 Team Foundation - WorkspaceProvider for managing Personal/Team context
 import { WorkspaceProvider } from './roles/team/foundation';
+// R4.2 Team Dashboard
+import { TeamDashboardPage } from './roles/team/dashboard';
+// R4.3 Team Activity Feed
+import { TeamActivityPage } from './roles/team/activity';
 
 // --- CONSTANTS & CONFIG ---
 const NAV_LINKS = [
@@ -334,7 +338,7 @@ const LandingPage = ({ onNavigate }: { onNavigate: (path: string, mode?: 'login'
   );
 };
 
-type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing';
+type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
@@ -408,13 +412,20 @@ const App = () => {
           setCurrentView('auth');
         }} />;
       case 'dashboard':
-        // Pro, Freelancer, Team, Agency all use ProDashboard (advanced dashboard)
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
-          // Freelancer, Team, Agency get the isFreelancer flag for freelancer-style features
+        // R4.2 Team Dashboard - Show Team-specific dashboard for Team role
+        if (userRole === 'team') {
+          return <TeamDashboardPage
+            onLogout={() => setCurrentView('landing')}
+            onNavigate={(path) => setCurrentView(path as ViewState)}
+          />;
+        }
+        // Pro, Freelancer, Agency use ProDashboard (advanced dashboard)
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'agency') {
+          // Freelancer, Agency get the isFreelancer flag for freelancer-style features
           return <ProDashboard
             onLogout={() => setCurrentView('landing')}
             onNavigate={(path) => setCurrentView(path as ViewState)}
-            isFreelancer={userRole === 'freelancer' || userRole === 'team' || userRole === 'agency'}
+            isFreelancer={userRole === 'freelancer' || userRole === 'agency'}
           />;
         }
         return <CasualDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} userCredits={userCredits} />;
@@ -451,6 +462,14 @@ const App = () => {
         if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <FreelancerDashboardPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.3 Team Activity Feed
+      case 'team-activity':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamActivityPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        // Fallback for non-team users
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'freelancer-billing':
