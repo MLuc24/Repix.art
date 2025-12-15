@@ -63,6 +63,12 @@ import { TeamActivityPage } from './roles/team/activity';
 import { TeamProjectDetailPage } from './roles/team/projects';
 // R4.6 Team Assets Library
 import { TeamAssetsPage } from './roles/team/assets/TeamAssetsPage'; // IMPORT TEAM ASSETS
+// R4.7 Brand Kit Lite
+import { BrandKitPage } from './roles/team/brand/BrandKitPage'; // IMPORT BRAND KIT
+// R4.8 Team Roles & Permissions
+import { TeamMembersPage } from './roles/team/permissions/TeamMembersPage'; // IMPORT TEAM MEMBERS
+// R4.9 Team Credits & Billing
+import { TeamBillingPage } from './roles/team/billing/TeamBillingPage'; // IMPORT TEAM BILLING
 
 
 // --- CONSTANTS & CONFIG ---
@@ -343,7 +349,7 @@ const LandingPage = ({ onNavigate }: { onNavigate: (path: string, mode?: 'login'
   );
 };
 
-type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'team-assets' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
+type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'team-assets' | 'brand-kit' | 'team-members' | 'team-billing' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
@@ -485,6 +491,27 @@ const App = () => {
       case 'team-assets':
         if (userRole === 'team' || userRole === 'agency') {
           return <TeamAssetsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.7 Brand Kit
+      case 'brand-kit':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <BrandKitPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.8 Team Members & Permissions
+      case 'team-members':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamMembersPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        }
+        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+
+      // R4.9 Team Credits & Billing
+      case 'team-billing':
+        if (userRole === 'team' || userRole === 'agency') {
+          return <TeamBillingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
