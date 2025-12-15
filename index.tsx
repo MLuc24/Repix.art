@@ -57,8 +57,7 @@ import { AgencyProjectsPage } from './roles/agency/pages/AgencyProjectsPage'; //
 import { WorkspaceProvider } from './roles/team/foundation';
 // R4.2 Team Dashboard
 import { TeamDashboardPage } from './roles/team/dashboard';
-// R4.3 Team Activity Feed
-import { TeamActivityPage } from './roles/team/activity';
+
 // R4.5 Team Project Detail (Collab View)
 import { TeamProjectDetailPage } from './roles/team/projects';
 // R4.6 Team Assets Library
@@ -349,7 +348,7 @@ const LandingPage = ({ onNavigate }: { onNavigate: (path: string, mode?: 'login'
   );
 };
 
-type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'team-assets' | 'brand-kit' | 'team-members' | 'team-billing' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing' | 'team-activity';
+type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'settings' | 'editor' | 'remix' | 'marketplace' | 'avatar' | 'backgrounds' | 'export' | 'upload' | 'credits' | 'credits-log' | 'subscription' | 'generator' | 'notifications' | 'auto-albums' | 'sync-pro' | 'my-images' | 'team-assets' | 'brand-kit' | 'team-members' | 'team-billing' | 'projects' | 'project-detail' | 'client-review' | 'delivery' | 'freelancer-analytics' | 'freelancer-billing';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
@@ -477,14 +476,6 @@ const App = () => {
         if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
           return <FreelancerDashboardPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
-        return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
-
-      // R4.3 Team Activity Feed
-      case 'team-activity':
-        if (userRole === 'team' || userRole === 'agency') {
-          return <TeamActivityPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
-        }
-        // Fallback for non-team users
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.6 Team Assets
