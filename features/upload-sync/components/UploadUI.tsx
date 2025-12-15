@@ -5,7 +5,7 @@ interface UploadDropzoneProps {
   onFilesSelected?: (files: File[]) => void;
 }
 
-export const UploadDropzone = ({ onFilesSelected }: UploadDropzoneProps) => {
+export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFilesSelected }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -82,54 +82,55 @@ export const UploadDropzone = ({ onFilesSelected }: UploadDropzoneProps) => {
   );
 };
 
-export const UploadQueueCard = ({ 
-    count, 
-    progress, 
-    thumbnail 
-}: { 
-    count: number, 
-    progress: number, 
-    thumbnail: string 
-}) => {
+export const UploadQueueCard: React.FC<{ item: any }> = ({ item }) => {
     return (
-        <div className="bg-white dark:bg-[#1a1b26] p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center gap-4 shadow-lg animate-fade-in-up">
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
-                <img src={thumbnail} alt="Upload" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">+{count - 1}</span>
-                </div>
+        <div className="bg-white dark:bg-[#1a1b26] p-4 rounded-xl border border-slate-200 dark:border-white/5 flex items-center gap-4 shadow-sm animate-fade-in-up">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                {item.previewUrl ? (
+                    <img src={item.previewUrl} alt={item.name} className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-white/5 text-slate-400">
+                        <Icons.Image className="w-6 h-6" />
+                    </div>
+                )}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-1">
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">Uploading {count} items...</h4>
-                    <span className="text-xs font-mono text-violet-500">{progress}%</span>
+                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate" title={item.name}>{item.name}</h4>
+                    <span className="text-xs font-mono text-violet-500">{item.progress}%</span>
                 </div>
-                <div className="h-2 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-violet-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+                <div className="h-1.5 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-violet-500 transition-all duration-300" style={{ width: `${item.progress}%` }} />
                 </div>
-                <p className="text-xs text-slate-500 mt-1">2 mins remaining</p>
             </div>
             <button className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full text-slate-400 hover:text-red-500 transition-colors">
-                <Icons.Close className="w-5 h-5" />
+                <Icons.Close className="w-4 h-4" />
             </button>
         </div>
     );
 };
 
-export const SmartAlbumCard = () => {
+export const SmartAlbumCard: React.FC<{ album: any, index: number }> = ({ album, index }) => {
+    const colors = ['from-violet-600 to-fuchsia-600', 'from-blue-600 to-cyan-600', 'from-emerald-600 to-teal-600'];
+    const colorClass = colors[index % colors.length];
+
     return (
-        <div className="mt-4 p-4 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-xl text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-violet-500/25 transition-all">
-            <div className="relative z-10 flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <Icons.Sparkles className="w-4 h-4 text-yellow-300" />
-                        <span className="text-xs font-bold uppercase tracking-wider text-white/90">AI Suggestion</span>
-                    </div>
-                    <h4 className="font-bold text-lg">Create "Summer 2024" Album?</h4>
-                    <p className="text-sm text-white/80">Based on dates & location data.</p>
+        <div className={`p-6 bg-gradient-to-br ${colorClass} rounded-2xl text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all`}>
+            <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-3">
+                    <Icons.Sparkles className="w-4 h-4 text-yellow-300" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-white/90">Smart Album</span>
                 </div>
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-violet-600 transition-colors">
-                   <Icons.ArrowRight className="w-5 h-5" />
+                <h4 className="font-bold text-xl mb-1">{album.title}</h4>
+                <p className="text-sm text-white/80 mb-4">{album.count} photos • {album.date}</p>
+                
+                <div className="flex -space-x-2">
+                    {[1,2,3].map(i => (
+                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-sm" />
+                    ))}
+                    <div className="w-8 h-8 rounded-full border-2 border-white/20 bg-black/20 backdrop-blur-sm flex items-center justify-center text-xs font-bold">
+                        AI
+                    </div>
                 </div>
             </div>
             {/* Decor */}

@@ -23,6 +23,6 @@ export interface AssetItem {
 export interface AssetFolder {
   id: string;
   name: string;
-  icon: 'folder' | 'heart' | 'star';
+  icon: 'folder' | 'heart' | 'star' | 'image' | 'user';
   count: number;
 }

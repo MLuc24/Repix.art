@@ -25,7 +25,6 @@ interface DashboardLayoutProps {
 const CASUAL_SIDEBAR_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
   { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'upload', label: 'Upload', icon: <Icons.Upload className="w-5 h-5" /> },
   { id: 'remix', label: 'AI Remix', icon: <Icons.Sparkles className="w-5 h-5" /> },
   { id: 'marketplace', label: 'Templates', icon: <Icons.Grid className="w-5 h-5" /> },
   { id: 'backgrounds', label: 'Backgrounds', icon: <Icons.Image className="w-5 h-5" /> },
@@ -214,7 +213,7 @@ export const DashboardLayout = ({
               </p>
             </div>
 
-            {user.role === 'casual' && (
+            {(user.role === 'casual' || user.role === 'pro' || user.role === 'freelancer') && (
               <button 
                 onClick={(e) => {
                   e.stopPropagation(); 
