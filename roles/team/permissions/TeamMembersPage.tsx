@@ -111,70 +111,88 @@ export const TeamMembersPage = ({ onLogout, onNavigate }: TeamMembersPageProps) 
             activePage="team-members"
         >
             <div className="max-w-7xl mx-auto space-y-6">
-                {/* Header with Stats */}
-                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#1a1b26] via-[#1e1f2e] to-[#1a1b26] p-8">
-                    {/* Ambient Glow */}
-                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-600/20 rounded-full blur-[100px] pointer-events-none" />
-                    <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-600/20 rounded-full blur-[100px] pointer-events-none" />
+                {/* Premium Header with Enhanced Stats */}
+                <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-[#1a1b26] via-[#1e1f2e] to-[#1a1b26] p-8 shadow-2xl">
+                    {/* Ambient Glow Effects */}
+                    <div className="absolute -top-32 -right-32 w-64 h-64 bg-violet-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+                    <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-cyan-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }} />
+
+                    {/* Decorative Grid Pattern */}
+                    <div className="absolute inset-0 opacity-5" style={{
+                        backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                        backgroundSize: '50px 50px'
+                    }} />
 
                     <div className="relative z-10">
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
+                        {/* Title and Actions Row */}
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
                             <div>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h1 className="text-3xl font-black text-white">Team Members</h1>
-                                    <span className="px-3 py-1 rounded-full bg-violet-600/20 border border-violet-500/30 text-violet-300 text-sm font-bold">
+                                <div className="flex items-center gap-4 mb-3">
+                                    <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-600/30 to-violet-500/10 border border-violet-400/30 shadow-lg shadow-violet-500/20">
+                                        <Icons.Shield className="w-8 h-8 text-violet-400" />
+                                    </div>
+                                    <div>
+                                        <h1 className="text-4xl font-black text-white mb-1 bg-gradient-to-r from-white via-violet-100 to-white bg-clip-text">
+                                            Team Members
+                                        </h1>
+                                        <p className="text-slate-400 text-base font-medium">
+                                            Manage roles and permissions for your team
+                                        </p>
+                                    </div>
+                                    <span className="px-4 py-2 rounded-xl bg-gradient-to-br from-violet-600/20 to-violet-500/10 border border-violet-400/30 text-violet-300 text-lg font-black shadow-lg shadow-violet-500/10">
                                         {stats.total}
                                     </span>
                                 </div>
-                                <p className="text-slate-400 text-lg">
-                                    Manage roles and permissions for your team
-                                </p>
                             </div>
 
+                            {/* Action Buttons */}
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => setIsPermissionsModalOpen(true)}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 text-white rounded-xl text-sm font-semibold transition-all"
+                                    className="group flex items-center gap-2.5 px-5 py-3 bg-white/5 border border-white/20 hover:bg-white/10 hover:border-violet-400/40 text-white rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
                                 >
-                                    <Icons.Shield className="w-4 h-4" />
-                                    View Permissions
+                                    <Icons.Shield className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                                    <span>View Permissions</span>
                                 </button>
                                 <button
                                     onClick={() => setIsInviteModalOpen(true)}
-                                    className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-violet-500/20"
+                                    className="group flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white rounded-xl text-sm font-black transition-all shadow-xl shadow-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/40 hover:scale-105"
                                 >
-                                    <Icons.Plus className="w-4 h-4" />
-                                    Invite Member
+                                    <Icons.Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                                    <span>Invite Member</span>
                                 </button>
                             </div>
                         </div>
 
-                        {/* Stats Grid */}
+                        {/* Enhanced Stats Grid */}
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
-                                <p className="text-xs text-slate-400 mb-1">Total</p>
-                                <p className="text-2xl font-bold text-white">{stats.total}</p>
-                            </div>
-                            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-sm">
-                                <p className="text-xs text-emerald-300 mb-1">Active</p>
-                                <p className="text-2xl font-bold text-emerald-400">{stats.active}</p>
-                            </div>
-                            <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 backdrop-blur-sm">
-                                <p className="text-xs text-orange-300 mb-1">Pending</p>
-                                <p className="text-2xl font-bold text-orange-400">{stats.pending}</p>
-                            </div>
-                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur-sm">
-                                <p className="text-xs text-red-300 mb-1">Admins</p>
-                                <p className="text-2xl font-bold text-red-400">{stats.admins}</p>
-                            </div>
-                            <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 backdrop-blur-sm">
-                                <p className="text-xs text-cyan-300 mb-1">Editors</p>
-                                <p className="text-2xl font-bold text-cyan-400">{stats.editors}</p>
-                            </div>
-                            <div className="p-4 rounded-xl bg-slate-500/10 border border-slate-500/20 backdrop-blur-sm">
-                                <p className="text-xs text-slate-300 mb-1">Viewers</p>
-                                <p className="text-2xl font-bold text-slate-400">{stats.viewers}</p>
-                            </div>
+                            {[
+                                { label: 'Total', value: stats.total, color: 'from-white/10 to-white/5', border: 'border-white/20', textColor: 'text-white', icon: Icons.User },
+                                { label: 'Active', value: stats.active, color: 'from-emerald-500/20 to-emerald-600/10', border: 'border-emerald-400/30', textColor: 'text-emerald-400', icon: Icons.Check },
+                                { label: 'Pending', value: stats.pending, color: 'from-orange-500/20 to-orange-600/10', border: 'border-orange-400/30', textColor: 'text-orange-400', icon: Icons.Clock },
+                                { label: 'Admins', value: stats.admins, color: 'from-red-500/20 to-red-600/10', border: 'border-red-400/30', textColor: 'text-red-400', icon: Icons.Shield },
+                                { label: 'Editors', value: stats.editors, color: 'from-cyan-500/20 to-cyan-600/10', border: 'border-cyan-400/30', textColor: 'text-cyan-400', icon: Icons.Pencil },
+                                { label: 'Viewers', value: stats.viewers, color: 'from-slate-500/20 to-slate-600/10', border: 'border-slate-400/30', textColor: 'text-slate-400', icon: Icons.Eye }
+                            ].map((stat, index) => (
+                                <div
+                                    key={stat.label}
+                                    className={`relative overflow-hidden p-4 rounded-xl bg-gradient-to-br ${stat.color} border ${stat.border} backdrop-blur-sm hover:scale-105 transition-all duration-300 group shadow-lg`}
+                                    style={{ animationDelay: `${index * 50}ms` }}
+                                >
+                                    {/* Icon Background */}
+                                    <div className="absolute top-0 right-0 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <stat.icon className="w-16 h-16" />
+                                    </div>
+
+                                    <div className="relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <stat.icon className={`w-4 h-4 ${stat.textColor}`} />
+                                            <p className={`text-xs ${stat.textColor} font-bold uppercase tracking-wider`}>{stat.label}</p>
+                                        </div>
+                                        <p className={`text-3xl font-black ${stat.textColor}`}>{stat.value}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
