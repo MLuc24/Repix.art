@@ -10,7 +10,7 @@ import { InsightCard } from './InsightCard';
 import { ProjectPerformanceTable } from './ProjectPerformanceTable';
 import { Icons } from '../../../shared/components/Icons';
 
-export const FreelancerDashboardPage = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
+export const FreelancerDashboardPage = ({ onLogout, onNavigate, user = MOCK_FREELANCER_USER }: { onLogout: () => void, onNavigate: (path: string) => void, user?: any }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
 
   // Derived Stats (Mock calculation)
@@ -27,7 +27,7 @@ export const FreelancerDashboardPage = ({ onLogout, onNavigate }: { onLogout: ()
   ];
 
   return (
-    <DashboardLayout user={MOCK_FREELANCER_USER} onLogout={onLogout} onNavigate={onNavigate} activePage="analytics">
+    <DashboardLayout user={user} onLogout={onLogout} onNavigate={onNavigate} activePage="freelancer-analytics">
       <div className="max-w-7xl mx-auto py-8 animate-fade-in-up space-y-8 min-h-screen">
         
         {/* Header */}

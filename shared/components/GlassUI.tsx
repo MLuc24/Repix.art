@@ -32,7 +32,7 @@ export const GlassPanel = ({
 /**
  * GlassModal
  */
-export const GlassModal = ({ isOpen, onClose, children, className = "" }: { isOpen: boolean, onClose: () => void, children?: React.ReactNode, className?: string }) => {
+export const GlassModal = ({ isOpen, onClose, children, className = "", hideCloseButton = false }: { isOpen: boolean, onClose: () => void, children?: React.ReactNode, className?: string, hideCloseButton?: boolean }) => {
   if (!isOpen) return null;
 
   return createPortal(
@@ -46,12 +46,14 @@ export const GlassModal = ({ isOpen, onClose, children, className = "" }: { isOp
       {/* Modal Content */}
       <div className="relative z-10 w-full max-w-xl animate-fade-in-up">
         <div className={`bg-white dark:bg-[#1a1b26] p-6 md:p-8 rounded-[22px] relative overflow-hidden shadow-2xl border border-white/10 ${className}`}>
-             <button 
-               onClick={onClose}
-               className="absolute top-4 right-4 p-2 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-slate-500 dark:text-slate-400 transition-colors z-20"
-             >
-               <Icons.Close className="w-5 h-5" />
-             </button>
+             {!hideCloseButton && (
+               <button 
+                 onClick={onClose}
+                 className="absolute top-4 right-4 p-2 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-slate-500 dark:text-slate-400 transition-colors z-20"
+               >
+                 <Icons.Close className="w-5 h-5" />
+               </button>
+             )}
              {/* Content Container */}
              <div>
                 {children}

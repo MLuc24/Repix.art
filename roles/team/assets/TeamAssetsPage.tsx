@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { DashboardLayout } from '../../../features/dashboard/components/DashboardLayout';
-import { MOCK_USER } from '../../../services/mock/dashboard';
+import { MOCK_USER, MOCK_TEAM_USER } from '../../../services/mock/dashboard';
 import { Icons } from '../../../shared/components/Icons';
 import { AssetFilterBar } from '../../../features/my-images/components/AssetFilterBar';
 import { TeamFolderSidebar } from './TeamFolderSidebar';
@@ -11,7 +11,8 @@ import { UploadToTeamModal } from './UploadToTeamModal';
 import { AddToProjectModal } from './AddToProjectModal';
 import { TeamAssetItem, MOCK_TEAM_ASSETS, MOCK_FOLDERS } from './types';
 
-export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
+export const TeamAssetsPage = ({ onLogout, onNavigate, user }: { onLogout: () => void, onNavigate: (path: string) => void, user?: any }) => {
+    // ... (rest of the component state is fine, just changing the function signature and JSX)
     const [activeTab, setActiveTab] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedAsset, setSelectedAsset] = useState<TeamAssetItem | null>(null);
@@ -64,7 +65,7 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
     };
 
     return (
-        <DashboardLayout user={MOCK_USER} onLogout={onLogout} onNavigate={onNavigate} activePage="team-assets">
+        <DashboardLayout user={user || MOCK_USER} onLogout={onLogout} onNavigate={onNavigate} activePage="team-assets">
             <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-slate-50 dark:bg-slate-900">
 
                 {/* Left Sidebar (Folders) */}
@@ -148,12 +149,10 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
                                     <TeamAssetCard
                                         key={asset.id}
                                         asset={asset}
-                                        index={index}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
+                                        onAssetClick={() => {
                                             setSelectedAsset(asset);
                                         }}
-                                        onAction={handleAction}
+                                        onAction={(action) => handleAction(action, asset)}
                                     />
                                 ))}
                             </div>

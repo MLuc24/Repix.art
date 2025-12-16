@@ -12,9 +12,10 @@ import type { BrandKit } from './types';
 interface BrandKitPageProps {
     onLogout: () => void;
     onNavigate: (path: string) => void;
+    user?: any;
 }
 
-export const BrandKitPage = ({ onLogout, onNavigate }: BrandKitPageProps) => {
+export const BrandKitPage = ({ onLogout, onNavigate, user = MOCK_TEAM_USER }: BrandKitPageProps) => {
     const [brand, setBrand] = useState<BrandKit>(MOCK_BRAND_KIT);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -38,7 +39,7 @@ export const BrandKitPage = ({ onLogout, onNavigate }: BrandKitPageProps) => {
 
     return (
         <DashboardLayout
-            user={MOCK_TEAM_USER}
+            user={user}
             onLogout={onLogout}
             onNavigate={onNavigate}
             activePage="brand-kit"

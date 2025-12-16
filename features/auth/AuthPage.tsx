@@ -206,8 +206,8 @@ export const AuthPage = ({ initialMode = 'login', onBack, onLoginSuccess }: { in
                <h2 className="text-4xl font-bold mb-6 text-white text-center">Sign In</h2>
                <div className="flex gap-4 justify-center mb-6">
                  <SocialButton icon={<Icons.Google />} />
-                 <SocialButton icon={<Icons.Facebook />} />
-                 <SocialButton icon={<Icons.Apple />} />
+                 <SocialButton icon={<Icons.Facebook className="text-[#1877F2]" />} />
+                 <SocialButton icon={<Icons.Apple className="text-black" />} />
                </div>
                <p className="text-slate-500 text-center text-sm mb-6">or use your email account</p>
                <form onSubmit={handleAuth} className="space-y-4">
@@ -238,8 +238,8 @@ export const AuthPage = ({ initialMode = 'login', onBack, onLoginSuccess }: { in
               <h2 className="text-4xl font-bold mb-6 text-white text-center">Create Account</h2>
               <div className="flex gap-4 justify-center mb-6">
                  <SocialButton icon={<Icons.Google />} />
-                 <SocialButton icon={<Icons.Facebook />} />
-                 <SocialButton icon={<Icons.Apple />} />
+                 <SocialButton icon={<Icons.Facebook className="text-[#1877F2]" />} />
+                 <SocialButton icon={<Icons.Apple className="text-black" />} />
               </div>
               <p className="text-slate-500 text-center text-sm mb-6">or use your email for registration</p>
               <form onSubmit={handleAuth} className="space-y-4">

@@ -468,21 +468,21 @@ const App = () => {
       case 'freelancer-analytics':
         // Team also uses analytics page
         if (userRole === 'freelancer' || userRole === 'team') {
-          return <FreelancerDashboardPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+          return <FreelancerDashboardPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.6 Team Assets
       case 'team-assets':
         if (userRole === 'team') {
-          return <TeamAssetsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+          return <TeamAssetsPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.7 Brand Kit
       case 'brand-kit':
         if (userRole === 'team') {
-          return <BrandKitPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+          return <BrandKitPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
@@ -503,7 +503,7 @@ const App = () => {
       case 'freelancer-billing':
         // Team also uses billing page
         if (userRole === 'freelancer' || userRole === 'team') {
-          return <ClientCreditTrackingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+          return <ClientCreditTrackingPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
@@ -577,13 +577,13 @@ const App = () => {
         }} />;
       case 'generator':
         if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
-          return <ProGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+          return <ProGenerator user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'my-images':
         // All pro-tier roles (pro, freelancer, team) use ProMyImages
         if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
-          return <ProMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+          return <ProMyImages user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       default:

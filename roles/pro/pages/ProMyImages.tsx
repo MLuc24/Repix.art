@@ -17,7 +17,7 @@ import { GlassModal, NeonButton } from '../../../shared/components/GlassUI';
 import { MultiSourceUploadModal } from '../../../features/upload-sync/components/MultiSourceUploadModal';
 
 
-export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
+export const ProMyImages = ({ onLogout, onNavigate, user = MOCK_PRO_USER }: { onLogout: () => void, onNavigate: (path: string) => void, user?: typeof MOCK_PRO_USER }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFolder, setActiveFolder] = useState<string | null>(MOCK_FOLDERS[0]?.id || null);
@@ -131,7 +131,7 @@ export const ProMyImages = ({ onLogout, onNavigate }: { onLogout: () => void, on
   };
 
   return (
-    <DashboardLayout user={MOCK_PRO_USER} onLogout={onLogout} onNavigate={onNavigate} activePage="my-images">
+    <DashboardLayout user={user} onLogout={onLogout} onNavigate={onNavigate} activePage="my-images">
       <div className="flex h-[calc(100vh-140px)] overflow-hidden border-t border-slate-200 dark:border-white/5 -mt-4">
         
         {/* PRO SIDEBAR: FOLDERS */}

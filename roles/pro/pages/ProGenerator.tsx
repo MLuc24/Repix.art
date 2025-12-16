@@ -18,7 +18,7 @@ import { ProRemixControls, RemixSettings } from '../../../features/generator/com
 import { NeonButton } from '../../../shared/components/GlassUI';
 import { Icons } from '../../../shared/components/Icons';
 
-export const ProGenerator = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
+export const ProGenerator = ({ onLogout, onNavigate, user = MOCK_PRO_USER }: { onLogout: () => void, onNavigate: (path: string) => void, user?: typeof MOCK_PRO_USER }) => {
   const [mode, setMode] = useState<GeneratorMode>('text-to-image');
   const [prompt, setPrompt] = useState('');
   const [selectedModel, setSelectedModel] = useState<GenModel>(MOCK_MODELS[0]);
@@ -107,7 +107,7 @@ export const ProGenerator = ({ onLogout, onNavigate }: { onLogout: () => void, o
   const totalCost = (selectedModel.cost + (outputCount > 1 ? (outputCount === 2 ? 1 : 2) : 0));
 
   return (
-    <DashboardLayout user={MOCK_PRO_USER} onLogout={onLogout} onNavigate={onNavigate} activePage="generator">
+    <DashboardLayout user={user} onLogout={onLogout} onNavigate={onNavigate} activePage="generator">
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[calc(100vh-140px)]">
         

@@ -10,14 +10,14 @@ import { CreditInsightCard } from './components/CreditInsightCard';
 import { ExportCreditReport } from './components/ExportCreditReport';
 import { Icons } from '../../../shared/components/Icons';
 
-export const ClientCreditTrackingPage = ({ onLogout, onNavigate }: { onLogout: () => void, onNavigate: (path: string) => void }) => {
+export const ClientCreditTrackingPage = ({ onLogout, onNavigate, user = MOCK_FREELANCER_USER }: { onLogout: () => void, onNavigate: (path: string) => void, user?: any }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
 
   // Filter logic could go here based on timeRange
   const sortedData = [...MOCK_CLIENT_CREDITS].sort((a, b) => b.totalCredits - a.totalCredits);
 
   return (
-    <DashboardLayout user={MOCK_FREELANCER_USER} onLogout={onLogout} onNavigate={onNavigate} activePage="freelancer-billing">
+    <DashboardLayout user={user} onLogout={onLogout} onNavigate={onNavigate} activePage="freelancer-billing">
       <div className="max-w-7xl mx-auto py-8 space-y-8 min-h-[calc(100vh-140px)] animate-fade-in-up">
         
         {/* Header */}
