@@ -8,10 +8,16 @@ interface AssetCardProps {
   isSelected?: boolean;
   isSelectMode?: boolean;
   onSelect?: () => void;
-  onClick: () => void;
-  onAction: (action: string) => void;
+  onClick?: (e: React.MouseEvent) => void;
+  onEdit?: () => void;
+  onDownload?: () => void;
+  onDelete?: () => void;
+  onAction?: (action: string) => void;
   index?: number;
   key?: React.Key;
+  showOwnerBadge?: boolean;
+  ownerName?: string;
+  ownerAvatar?: string;
 }
 
 const getBadge = (source: string) => {
@@ -24,8 +30,40 @@ const getBadge = (source: string) => {
   }
 };
 
-export const AssetCard = ({ asset, isSelected, isSelectMode, onSelect, onClick, onAction, index = 0 }: AssetCardProps) => {
+export const AssetCard = ({ 
+  asset, 
+  isSelected, 
+  isSelectMode, 
+  onSelect, 
+  onClick, 
+  onEdit,
+  onDownload,
+  onDelete,
+  onAction, 
+  index = 0,
+  showOwnerBadge = false,
+  ownerName,
+  ownerAvatar
+}: AssetCardProps) => {
   const badge = getBadge(asset.source);
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit) onEdit();
+    else if (onAction) onAction('edit');
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDownload) onDownload();
+    else if (onAction) onAction('download');
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) onDelete();
+    else if (onAction) onAction('delete');
+  };
 
   return (
     <div 
@@ -52,6 +90,22 @@ export const AssetCard = ({ asset, isSelected, isSelectMode, onSelect, onClick, 
         </div>
       )}
 
+      {/* Owner Badge (for team shared view) */}
+      {showOwnerBadge && ownerName && (
+        <div className="absolute top-2 left-2 z-10">
+          <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 backdrop-blur text-white border border-white/20">
+            {ownerAvatar ? (
+              <img src={ownerAvatar} alt={ownerName} className="w-4 h-4 rounded-full" />
+            ) : (
+              <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-[8px] font-bold">
+                {ownerName.charAt(0)}
+              </div>
+            )}
+            <span className="text-[9px] font-medium">{ownerName}</span>
+          </div>
+        </div>
+      )}
+
       {/* Type Badge */}
       <div className="absolute top-2 right-2 z-10">
          <div className={`px-1.5 py-1 rounded-md ${badge.color} text-white flex items-center gap-1 shadow-lg`}>
@@ -68,19 +122,19 @@ export const AssetCard = ({ asset, isSelected, isSelectMode, onSelect, onClick, 
          {!isSelectMode && (
            <div className="flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform delay-75">
               <button 
-                onClick={(e) => { e.stopPropagation(); onAction('edit'); }}
+                onClick={handleEdit}
                 className="flex-1 py-1.5 rounded-lg bg-white text-black text-[10px] font-bold hover:bg-slate-200 transition-colors shadow-lg"
               >
                 Edit
               </button>
               <button 
-                onClick={(e) => { e.stopPropagation(); onAction('download'); }}
+                onClick={handleDownload}
                 className="p-1.5 rounded-lg bg-black/40 backdrop-blur hover:bg-black/60 text-white border border-white/10"
               >
                 <Icons.Download className="w-3.5 h-3.5" />
               </button>
               <button 
-                onClick={(e) => { e.stopPropagation(); onAction('delete'); }}
+                onClick={handleDelete}
                 className="p-1.5 rounded-lg bg-red-500/20 backdrop-blur hover:bg-red-500 text-red-100 hover:text-white border border-red-500/30"
               >
                 <Icons.Trash className="w-3.5 h-3.5" />

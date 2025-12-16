@@ -42,7 +42,7 @@ import { OnboardingPage } from './features/onboarding/OnboardingPage'; // IMPORT
 import { ProfilePage } from './features/profile/ProfilePage'; // IMPORT PROFILE
 import { NotificationsPage } from './features/notifications/NotificationsPage'; // IMPORT NOTIFICATIONS
 import { PRICING_TIERS } from './services/mock/credits'; // IMPORT SHARED MOCK DATA
-import { MOCK_USER, MOCK_PRO_USER, MOCK_FREELANCER_USER, MOCK_TEAM_USER, MOCK_AGENCY_USER } from './services/mock/dashboard'; // IMPORT MOCK USERS
+import { MOCK_USER, MOCK_PRO_USER, MOCK_FREELANCER_USER, MOCK_TEAM_USER } from './services/mock/dashboard'; // IMPORT MOCK USERS
 import { FreelancerProjectsPage } from './roles/freelancer/pages/FreelancerProjectsPage'; // IMPORT FREELANCER PROJECTS
 import { ProjectDetailPage } from './roles/freelancer/projects/ProjectDetailPage'; // IMPORT PROJECT DETAIL
 import { ClientReviewPage } from './roles/freelancer/review/ClientReviewPage'; // IMPORT CLIENT REVIEW
@@ -50,9 +50,8 @@ import { ProjectDeliveryPage } from './roles/freelancer/delivery/ProjectDelivery
 import { FreelancerDashboardPage } from './roles/freelancer/analytics/FreelancerDashboardPage'; // IMPORT FREELANCER ANALYTICS
 import { ClientCreditTrackingPage } from './roles/freelancer/billing/ClientCreditTrackingPage'; // IMPORT FREELANCER BILLING
 import { SettingsPage } from './features/settings/SettingsPage'; // IMPORT SETTINGS
-// TEAM & AGENCY ROLE IMPORTS - reuse freelancer components with different user context
+// TEAM ROLE IMPORTS - reuse freelancer components with different user context
 import { TeamProjectsPage } from './roles/team/pages/TeamProjectsPage'; // IMPORT TEAM PROJECTS
-import { AgencyProjectsPage } from './roles/agency/pages/AgencyProjectsPage'; // IMPORT AGENCY PROJECTS
 // R4.1 Team Foundation - WorkspaceProvider for managing Personal/Team context
 import { WorkspaceProvider } from './roles/team/foundation';
 // R4.2 Team Dashboard
@@ -68,6 +67,8 @@ import { BrandKitPage } from './roles/team/brand/BrandKitPage'; // IMPORT BRAND 
 import { TeamMembersPage } from './roles/team/permissions/TeamMembersPage'; // IMPORT TEAM MEMBERS
 // R4.9 Team Credits & Billing
 import { TeamBillingPage } from './roles/team/billing/TeamBillingPage'; // IMPORT TEAM BILLING
+// R4.10 Team Editor Context
+import { TeamEditorPage } from './roles/team/editor/pages/TeamEditorPage'; // IMPORT TEAM EDITOR
 
 
 // --- CONSTANTS & CONFIG ---
@@ -352,14 +353,9 @@ type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'profile' | '
 
 const App = () => {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
-  // Extended role types: casual → pro → freelancer → team → agency
-  const [userRole, setUserRole] = useState<'casual' | 'pro' | 'freelancer' | 'team' | 'agency'>('casual');
+  // Extended role types: casual → pro → freelancer → team
+  const [userRole, setUserRole] = useState<'casual' | 'pro' | 'freelancer' | 'team'>('casual');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-
-  // AUTOMATIC SCROLL TO TOP ON NAVIGATION
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentView]);
 
   // Lifted User State
   const [userCredits, setUserCredits] = useState(MOCK_USER.credits);
@@ -370,9 +366,8 @@ const App = () => {
 
   const handleOnboardingFinish = (selectedRole: string) => {
     // Determine which role to set based on ID
-    if (selectedRole === 'agency') {
-      setUserRole('agency');
-    } else if (selectedRole === 'team') {
+    // Note: agency is merged with team
+    if (selectedRole === 'agency' || selectedRole === 'team') {
       setUserRole('team');
     } else if (selectedRole === 'freelancer') {
       setUserRole('freelancer');
@@ -386,13 +381,12 @@ const App = () => {
 
   // Determine current user object based on role
   const currentUser =
-    userRole === 'agency' ? MOCK_AGENCY_USER :
-      userRole === 'team' ? MOCK_TEAM_USER :
-        userRole === 'freelancer' ? MOCK_FREELANCER_USER :
-          userRole === 'pro' ? MOCK_PRO_USER :
-            MOCK_USER;
+    userRole === 'team' ? MOCK_TEAM_USER :
+      userRole === 'freelancer' ? MOCK_FREELANCER_USER :
+        userRole === 'pro' ? MOCK_PRO_USER :
+          MOCK_USER;
 
-  // Toggle role logic: casual → pro → freelancer → team → agency → casual
+  // Toggle role logic: casual → pro → freelancer → team → casual
   const handleRoleToggle = () => {
     setUserRole(prev => {
       if (prev === 'casual') return 'pro';
@@ -433,22 +427,18 @@ const App = () => {
             onNavigate={(path) => setCurrentView(path as ViewState)}
           />;
         }
-        // Pro, Freelancer, Agency use ProDashboard (advanced dashboard)
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'agency') {
-          // Freelancer, Agency get the isFreelancer flag for freelancer-style features
+        // Pro, Freelancer use ProDashboard (advanced dashboard)
+        if (userRole === 'pro' || userRole === 'freelancer') {
           return <ProDashboard
             onLogout={() => setCurrentView('landing')}
             onNavigate={(path) => setCurrentView(path as ViewState)}
-            isFreelancer={userRole === 'freelancer' || userRole === 'agency'}
+            isFreelancer={userRole === 'freelancer'}
           />;
         }
         return <CasualDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} userCredits={userCredits} />;
 
       case 'projects':
         // Route to appropriate Projects page based on role
-        if (userRole === 'agency') {
-          return <AgencyProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
-        }
         if (userRole === 'team') {
           return <TeamProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
@@ -462,57 +452,57 @@ const App = () => {
         if (userRole === 'team') {
           return <TeamProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
-        // Freelancer and Agency use standard project detail
-        if (userRole === 'freelancer' || userRole === 'agency') {
+        // Freelancer uses standard project detail
+        if (userRole === 'freelancer') {
           return <ProjectDetailPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <FreelancerProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'delivery':
-        // Team and Agency also use delivery page
-        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // Team also uses delivery page
+        if (userRole === 'freelancer' || userRole === 'team') {
           return <ProjectDeliveryPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <FreelancerProjectsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'freelancer-analytics':
-        // Team and Agency also use analytics page
-        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // Team also uses analytics page
+        if (userRole === 'freelancer' || userRole === 'team') {
           return <FreelancerDashboardPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.6 Team Assets
       case 'team-assets':
-        if (userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'team') {
           return <TeamAssetsPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.7 Brand Kit
       case 'brand-kit':
-        if (userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'team') {
           return <BrandKitPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.8 Team Members & Permissions
       case 'team-members':
-        if (userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'team') {
           return <TeamMembersPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       // R4.9 Team Credits & Billing
       case 'team-billing':
-        if (userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'team') {
           return <TeamBillingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
 
       case 'freelancer-billing':
-        // Team and Agency also use billing page
-        if (userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // Team also uses billing page
+        if (userRole === 'freelancer' || userRole === 'team') {
           return <ClientCreditTrackingPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <ProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
@@ -528,32 +518,36 @@ const App = () => {
       case 'settings':
         return <SettingsPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'editor':
-        // Pro, Freelancer, Team, Agency all use Pro Editor
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // R4.10 - Team uses TeamEditorPage with team context
+        if (userRole === 'team') {
+          return <TeamEditorPage onBack={() => setCurrentView('dashboard')} />;
+        }
+        // Pro, Freelancer use Pro Editor
+        if (userRole === 'pro' || userRole === 'freelancer') {
           return <EditorProLite onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;
         }
         return <CasualEditor onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;
       case 'export':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProExport onBack={() => setCurrentView('editor')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualExport onBack={() => setCurrentView('editor')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'remix':
         return <CasualRemix user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'marketplace':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProMarketplace user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualMarketplace user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'avatar':
         return <CasualAvatar user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'backgrounds':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <BackgroundPacksProPanel user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualBackgrounds user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'upload':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProUpload onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualUpload user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
@@ -561,7 +555,7 @@ const App = () => {
         // Only accessible in Pro usually, but fallback if Casual tries to access (could redirect)
         return <AutoAlbumProPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'sync-pro':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <SyncProDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         // Fallback for casual
@@ -569,8 +563,8 @@ const App = () => {
       case 'credits':
         return <CasualCredits onNavigate={(path) => setCurrentView(path as ViewState)} onAddCredits={handleAddCredits} />;
       case 'credits-log':
-        // Use Pro Log for Pro, Freelancer, Team, Agency
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // Use Pro Log for Pro, Freelancer, Team
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <CreditUsageLogProPage onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualCreditsLog onNavigate={(path) => setCurrentView(path as ViewState)} />;
@@ -582,12 +576,13 @@ const App = () => {
           setCurrentView(path as ViewState)
         }} />;
       case 'generator':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'my-images':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team' || userRole === 'agency') {
+        // All pro-tier roles (pro, freelancer, team) use ProMyImages
+        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }
         return <CasualMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;

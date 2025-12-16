@@ -6,12 +6,12 @@
  * 
  * Structure:
  * - pages/        : Team-specific page components
- * - components/   : Reusable team UI components (future)
- * - workspace/    : Workspace management (future)
- * - members/      : Team member management (future)
+ * - components/   : Reusable team UI components
+ * - editor/       : Team Editor Context (R4.10)
+ * - workspace/    : Workspace management
+ * - members/      : Team member management
  * 
- * Note: Currently reuses Freelancer components for MVP.
- * Future iterations will add Team-specific features.
+ * Note: Team role reuses Freelancer editor and adds Team Context overlay.
  */
 
 export const TEAM_ROLE_CONFIG = {
@@ -25,5 +25,9 @@ export const TEAM_ROLE_CONFIG = {
         'Team members management',
         'Role-based permissions',
         'Shared asset library',
+        'Team Editor Context (R4.10)', // NEW
     ],
 };
+
+// Export Team Editor module
+export * from './editor';
