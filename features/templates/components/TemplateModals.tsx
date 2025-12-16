@@ -66,26 +66,35 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template, onUse, onSelec
     }
   }, [isOpen, template]);
 
-  if (!template) return null;
+  // Optimize derived data: memoize similar templates list
+  const allTemplates = React.useMemo(() => {
+    if (!template) return [];
+    // Generate a long list of similar items by duplicating MOCK_TEMPLATES
+    return [...MOCK_TEMPLATES, ...MOCK_TEMPLATES, ...MOCK_TEMPLATES].filter(t => t.id !== template.id);
+  }, [template?.id]);
 
-  // Mock "Similar" data - Duplicate list to simulate many items
-  const allTemplates = [...MOCK_TEMPLATES, ...MOCK_TEMPLATES, ...MOCK_TEMPLATES].filter(t => t.id !== template.id);
-  const visibleTemplates = allTemplates.slice(0, displayCount);
+  const visibleTemplates = React.useMemo(() => {
+    return allTemplates.slice(0, displayCount);
+  }, [allTemplates, displayCount]);
 
-  const handleScroll = () => {
+  const handleScroll = React.useCallback(() => {
     if (scrollContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      // If close to bottom, load more
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        if (displayCount < allTemplates.length) {
-          setDisplayCount(prev => Math.min(prev + 4, allTemplates.length));
-        }
+      // Load more when scrolled close to bottom
+      if (scrollTop + clientHeight >= scrollHeight - 200) { // Increased threshold
+        // Use functional state update with check to prevent unneeded re-renders
+        setDisplayCount(prev => {
+          if (prev >= allTemplates.length) return prev;
+          return Math.min(prev + 8, allTemplates.length); // Load 8 at a time instead of 4
+        });
       }
     }
-  };
+  }, [allTemplates.length]);
+
+  if (!template) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center lg:pl-64 transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       {/* Backdrop */}
       <div className="absolute inset-0 bg-[#020617]/95 backdrop-blur-sm" onClick={onClose} />
 
@@ -203,10 +212,11 @@ export const TemplatePreviewModal = ({ isOpen, onClose, template, onUse, onSelec
                     <div 
                       key={`${item.id}-${idx}`} // Use index for unique key since we duplicated mock data
                       onClick={() => onSelectSimilar && onSelectSimilar(item)}
-                      className="group cursor-pointer flex flex-col gap-3 animate-fade-in-up"
+                      className="group cursor-pointer flex flex-col gap-3"
                     >
                        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 group-hover:border-violet-500/50 transition-all shadow-sm group-hover:shadow-violet-900/20 group-hover:-translate-y-1 duration-300">
                           <img 
+                            loading="lazy"
                             src={item.thumbnail} 
                             alt={item.title} 
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 

@@ -76,12 +76,12 @@ export const ProfileIdentityCard = ({ user, onLogout, onUpgrade }: ProfileIdenti
               <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Oct 2023</span>
            </div>
            
-           {!isPro && !isFreelancer && (
+           {user.role !== 'team' && user.role !== 'agency' && (
              <button 
                onClick={onUpgrade}
                className="w-full mt-3 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black text-xs font-bold hover:opacity-90 transition-opacity"
              >
-               Upgrade to Pro
+               {user.role === 'freelancer' ? 'Upgrade to Team' : user.role === 'pro' ? 'Upgrade to Freelancer' : 'Upgrade to Pro'}
              </button>
            )}
         </div>

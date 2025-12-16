@@ -258,7 +258,7 @@ export const DashboardLayout = ({
               </p>
             </div>
 
-            {user.role === 'casual' && (
+            {(user.role === 'casual' || user.role === 'pro' || user.role === 'freelancer') && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();

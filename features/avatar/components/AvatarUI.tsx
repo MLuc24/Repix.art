@@ -6,27 +6,51 @@ import { AvatarStyle, UploadedPhoto, AvatarResult } from '../types';
 
 // --- STEP 1: UPLOAD UI ---
 
-export const UploadDropzone = ({ onUpload }: { onUpload: () => void }) => (
-  <div 
-    onClick={onUpload}
-    className="
-      relative group cursor-pointer w-full aspect-[3/1] rounded-3xl 
-      border-2 border-dashed border-slate-300 dark:border-white/20 
-      hover:border-violet-500 dark:hover:border-violet-500/50 
-      bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 
-      transition-all duration-300
-      flex flex-col items-center justify-center gap-4 p-8
-    "
-  >
-    <div className="w-16 h-16 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-400 group-hover:text-violet-500 dark:group-hover:text-violet-400 group-hover:scale-110 transition-all shadow-sm dark:shadow-none">
-      <Icons.Image className="w-8 h-8" />
+export const UploadDropzone = ({ onUpload }: { onUpload: () => void }) => {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    inputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      // In a real app, we would process the files here.
+      // For this mock demo, we just trigger the onUpload callback which sets mock data.
+      onUpload();
+    }
+  };
+
+  return (
+    <div 
+      onClick={handleClick}
+      className="
+        relative group cursor-pointer w-full aspect-[3/1] rounded-3xl 
+        border-2 border-dashed border-slate-300 dark:border-white/20 
+        hover:border-violet-500 dark:hover:border-violet-500/50 
+        bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 
+        transition-all duration-300
+        flex flex-col items-center justify-center gap-4 p-8
+      "
+    >
+      <input 
+        type="file" 
+        multiple 
+        ref={inputRef} 
+        onChange={handleFileChange} 
+        className="hidden" 
+        accept="image/png, image/jpeg, image/webp"
+      />
+      <div className="w-16 h-16 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-400 group-hover:text-violet-500 dark:group-hover:text-violet-400 group-hover:scale-110 transition-all shadow-sm dark:shadow-none">
+        <Icons.Image className="w-8 h-8" />
+      </div>
+      <div className="text-center">
+        <h3 className="text-lg font-bold text-slate-700 dark:text-white mb-1">Upload 3-6 Portrait Photos</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Clear face, different angles recommended</p>
+      </div>
     </div>
-    <div className="text-center">
-      <h3 className="text-lg font-bold text-slate-700 dark:text-white mb-1">Upload 3-6 Portrait Photos</h3>
-      <p className="text-sm text-slate-500 dark:text-slate-400">Clear face, different angles recommended</p>
-    </div>
-  </div>
-);
+  );
+};
 
 export const PhotoGrid = ({ photos, onRemove }: { photos: UploadedPhoto[], onRemove: (id: string) => void }) => (
   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 mt-8">

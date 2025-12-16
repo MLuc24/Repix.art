@@ -54,7 +54,7 @@ export const CasualDashboard = ({ onLogout, onNavigate, userCredits }: CasualDas
     else if (action === 'avatar') onNavigate('avatar');
     else if (action === 'upload') onNavigate('upload'); 
     else if (action === 'backgrounds') onNavigate('backgrounds');
-    else if (action === 'editor') onNavigate('editor');
+    else if (action === 'editor' || action === 'enhance') onNavigate('editor');
   };
 
   return (

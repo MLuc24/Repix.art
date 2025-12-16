@@ -356,6 +356,11 @@ const App = () => {
   const [userRole, setUserRole] = useState<'casual' | 'pro' | 'freelancer' | 'team' | 'agency'>('casual');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
+  // AUTOMATIC SCROLL TO TOP ON NAVIGATION
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentView]);
+
   // Lifted User State
   const [userCredits, setUserCredits] = useState(MOCK_USER.credits);
 
@@ -393,8 +398,7 @@ const App = () => {
       if (prev === 'casual') return 'pro';
       if (prev === 'pro') return 'freelancer';
       if (prev === 'freelancer') return 'team';
-      if (prev === 'team') return 'agency';
-      return 'casual'; // agency → casual
+      return 'casual'; // team → casual
     });
     setCurrentView('dashboard');
   }

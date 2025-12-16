@@ -16,7 +16,7 @@ export const BackgroundPreviewOverlay = ({ pack, onClose, onApply }: BackgroundP
   if (!pack) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:pl-64">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
       
       <div className="relative w-full max-w-5xl h-[85vh] bg-[#0e0f13] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-fade-in-up">
@@ -50,7 +50,7 @@ export const BackgroundPreviewOverlay = ({ pack, onClose, onApply }: BackgroundP
            
            <div className="mb-6">
              <h2 className="text-xl font-bold text-white mb-1">{pack.title}</h2>
-             <p className="text-xs text-slate-400">{pack.count} backgrounds included</p>
+             <p className="text-xs text-slate-400">{pack.items.length} backgrounds included</p>
            </div>
 
            <div className="flex-1 overflow-y-auto custom-scrollbar -mx-2 px-2">
@@ -72,12 +72,6 @@ export const BackgroundPreviewOverlay = ({ pack, onClose, onApply }: BackgroundP
                        <div className="absolute inset-0 bg-violet-500/10" />
                      )}
                    </button>
-                 ))}
-                 {/* Fillers for layout if needed */}
-                 {Array.from({ length: Math.max(0, pack.count - pack.items.length) }).map((_, i) => (
-                   <div key={i} className="aspect-video rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
-                      <Icons.Image className="w-4 h-4 text-white/10" />
-                   </div>
                  ))}
               </div>
            </div>

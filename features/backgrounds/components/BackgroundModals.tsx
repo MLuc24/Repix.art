@@ -26,12 +26,12 @@ export const BackgroundPackDetailModal = ({ isOpen, onClose, pack, onUse, isUnlo
   const showUnlockUI = pack.isPro && !isUnlocked;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center lg:pl-64 transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       {/* Backdrop */}
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Main Container */}
-      <div className={`relative w-full max-w-7xl h-[90vh] bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-2xl flex flex-col md:flex-row transition-transform duration-500 ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-10'}`}>
+      <div className={`relative w-full max-w-5xl h-auto max-h-[85vh] bg-white border border-slate-200 rounded-[32px] overflow-hidden shadow-2xl flex flex-col md:flex-row transition-transform duration-500 ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-10'}`}>
         
         {/* CLOSE BUTTON */}
         <button 
@@ -56,7 +56,14 @@ export const BackgroundPackDetailModal = ({ isOpen, onClose, pack, onUse, isUnlo
                
                {/* Apply Overlay Button (Hover on Image) */}
                <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px] cursor-pointer" onClick={() => onUse(selectedItem)}>
-                  <button className="px-8 py-3 rounded-xl bg-white text-black font-bold transform scale-90 hover:scale-100 transition-all shadow-xl">
+                  <button 
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUse(selectedItem);
+                    }}
+                    className="px-8 py-3 rounded-xl bg-white text-black font-bold transform scale-90 hover:scale-100 transition-all shadow-xl"
+                  >
                     Use This Background
                   </button>
                </div>
@@ -88,7 +95,7 @@ export const BackgroundPackDetailModal = ({ isOpen, onClose, pack, onUse, isUnlo
           {/* Thumbnails Grid */}
           <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
-              Included Backgrounds ({pack.count})
+              Included Backgrounds ({pack.items.length})
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {pack.items.map((item) => (
@@ -109,12 +116,6 @@ export const BackgroundPackDetailModal = ({ isOpen, onClose, pack, onUse, isUnlo
                   )}
                 </button>
               ))}
-              {/* Fake extra items for demo */}
-              {Array.from({ length: pack.count - pack.items.length }).map((_, i) => (
-                <div key={i} className="aspect-video rounded-xl bg-white border border-slate-200 flex items-center justify-center opacity-50">
-                  <Icons.Image className="w-5 h-5 text-slate-300" />
-                </div>
-              ))}
             </div>
           </div>
 
@@ -132,7 +133,7 @@ export const BackgroundPackDetailModal = ({ isOpen, onClose, pack, onUse, isUnlo
                  </button>
               </div>
             ) : (
-              <NeonButton onClick={() => onUse(selectedItem)} className="w-full">
+              <NeonButton type="button" onClick={() => onUse(selectedItem)} className="w-full">
                 Use Background
               </NeonButton>
             )}
