@@ -20,6 +20,10 @@ import {
   BatchFilmstrip,
   BatchActionPanel,
   QuickReviewControls,
+  RealtimePresence,
+  RealtimeActivityFeed,
+  RealtimeUserCursors,
+  LiveEditIndicator,
 } from '../components';
 import { AIChatPanel } from '../../../../features/editor/components/AIChatPanel';
 import type {
@@ -34,6 +38,9 @@ import {
   mockTeamEditorData,
   mockTeamMembers,
   mockBatchImages,
+  mockActiveUsers,
+  mockRealtimeActivities,
+  mockUserCursors,
 } from '../../../../services/mock/team_editor';
 
 interface TeamEditorPageProps {
@@ -65,6 +72,29 @@ export const TeamEditorPage: React.FC<TeamEditorPageProps> = ({
   const [assignment, setAssignment] = useState(mockTeamEditorData.assignment);
   const [comments, setComments] = useState<TeamComment[]>(mockTeamEditorData.comments);
   const [isCommentPanelOpen, setIsCommentPanelOpen] = useState(true);
+
+  // Realtime Collaboration State
+  const [activeUsers, setActiveUsers] = useState(mockActiveUsers);
+  const [realtimeActivities, setRealtimeActivities] = useState(mockRealtimeActivities);
+  const [showActivityFeed, setShowActivityFeed] = useState(false);
+  const [userCursors, setUserCursors] = useState(mockUserCursors);
+  const currentUserId = mockTeamMembers[2].id; // Mike Wilson (current user)
+
+  // Simulate cursor movement for realtime effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUserCursors(prev => 
+        prev.map(cursor => ({
+          ...cursor,
+          position: {
+            x: cursor.position.x + (Math.random() - 0.5) * 3,
+            y: cursor.position.y + (Math.random() - 0.5) * 3,
+          }
+        }))
+      );
+    }, 2000); // Move cursors every 2s
+    return () => clearInterval(interval);
+  }, []);
 
   // R4.11 — Batch Edit & Review Mode State
   const [editMode, setEditMode] = useState<EditMode>('single');
@@ -411,6 +441,20 @@ export const TeamEditorPage: React.FC<TeamEditorPageProps> = ({
           </div>
         </div>
       )}
+
+      {/* Live Edit Indicators - Show when other users are editing */}
+      {activeUsers
+        .filter(u => u.user.id !== currentUserId && u.currentTool)
+        .map((activeUser, index) => (
+          <LiveEditIndicator
+            key={activeUser.user.id}
+            user={activeUser.user}
+            tool={activeUser.currentTool!}
+          />
+        ))}
+
+      {/* Realtime User Cursors */}
+      <RealtimeUserCursors cursors={userCursors} />
     </div>
   );
 
@@ -467,7 +511,7 @@ export const TeamEditorPage: React.FC<TeamEditorPageProps> = ({
     return panels.length > 0 ? <div className="flex h-full">{panels}</div> : null;
   };
 
-  // Custom Team Header with R4.11 features
+  // Custom Team Header with R4.11 features + Realtime Collaboration
   const TeamEditorHeader = (
     <div className="h-auto flex flex-col">
       {/* Team Context Bar */}
@@ -479,35 +523,49 @@ export const TeamEditorPage: React.FC<TeamEditorPageProps> = ({
         onProjectClick={onNavigateToProject}
       />
 
-      {/* Enhanced Editor Header */}
-      <header className="h-16 flex-none bg-[#0e0f13]/90 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-4 relative z-50">
-        {/* Left: Navigation + File + Assignment Status */}
+      {/* Modern Enhanced Editor Header with Realtime Collaboration */}
+      <header className="h-16 flex-none bg-gradient-to-r from-[#0e0f13]/95 via-[#12141a]/95 to-[#0e0f13]/95 backdrop-blur-2xl border-b border-white/10 flex items-center justify-between px-4 relative z-50 shadow-lg shadow-black/20">
+        {/* Left: Navigation + File */}
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-slate-400 hover:text-white">
-            <Icons.ChevronLeft className="w-5 h-5" />
+          <button onClick={onBack} className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-slate-400 hover:text-white group">
+            <Icons.ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
+          <div className="flex items-center gap-3 px-3 py-1.5 bg-white/5 rounded-xl border border-white/5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-600 via-violet-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-600/20">
               R
             </div>
             <div className="text-sm">
-              <span className="text-slate-500">{mockTeamEditorData.project.name} / </span>
-              <span className="text-slate-200 font-medium">{currentImage.fileName}</span>
+              <span className="text-slate-400">{mockTeamEditorData.project.name} / </span>
+              <span className="text-white font-semibold">{currentImage.fileName}</span>
             </div>
           </div>
 
-          <div className="h-6 w-px bg-white/10" />
+          <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+
+          {/* Realtime Presence - Prominent Position */}
+          <div className="relative">
+            <div
+              className="cursor-pointer"
+              onMouseEnter={() => setShowActivityFeed(true)}
+              onMouseLeave={() => setShowActivityFeed(false)}
+            >
+              <RealtimePresence activeUsers={activeUsers} currentUserId={currentUserId} />
+            </div>
+            {showActivityFeed && <RealtimeActivityFeed activities={realtimeActivities} />}
+          </div>
+
+          <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
           {editMode === 'single' && (
             <ImageAssignmentStatus assignment={assignment} onStatusChange={handleStatusChange} />
           )}
         </div>
 
-        {/* Center: Mode Controls */}
-        <div className="flex items-center gap-3">
+        {/* Center: Mode Controls with Modern Design */}
+        <div className="flex items-center gap-3 px-3 py-1.5 bg-black/30 rounded-xl border border-white/5">
           <BatchEditToggle mode={editMode} onModeChange={setEditMode} />
-          <div className="h-6 w-px bg-white/10" />
+          <div className="h-6 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
           <QuickReviewControls
             isReviewMode={isReviewMode}
             onToggleReview={() => setIsReviewMode(!isReviewMode)}
@@ -521,29 +579,32 @@ export const TeamEditorPage: React.FC<TeamEditorPageProps> = ({
           />
         </div>
 
-        {/* Right: Actions */}
+        {/* Right: Actions with Modern Design */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-black/30 rounded-lg p-1 border border-white/5">
-            <button onClick={handleUndo} className="p-1.5 text-slate-400 hover:text-white transition-colors" title="Undo">
+          <div className="flex items-center bg-black/40 rounded-xl p-1 border border-white/5 shadow-lg">
+            <button onClick={handleUndo} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200" title="Undo">
               <Icons.Undo className="w-4 h-4" />
             </button>
-            <button onClick={handleRedo} className="p-1.5 text-slate-400 hover:text-white transition-colors" title="Redo">
+            <button onClick={handleRedo} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200" title="Redo">
               <Icons.Redo className="w-4 h-4" />
             </button>
-            <div className="w-px h-4 bg-white/10 mx-1" />
-            <button onClick={handleReset} className="p-1.5 text-slate-400 hover:text-white transition-colors" title="Reset">
+            <div className="w-px h-4 bg-white/10 mx-0.5" />
+            <button onClick={handleReset} className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all duration-200" title="Reset">
               <Icons.Trash className="w-4 h-4" />
             </button>
           </div>
 
           <button
             onClick={() => setIsCommentPanelOpen(!isCommentPanelOpen)}
-            className={`relative p-2 rounded-lg transition-all ${isCommentPanelOpen ? 'bg-violet-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
-              }`}
+            className={`relative p-2.5 rounded-xl transition-all duration-200 ${
+              isCommentPanelOpen
+                ? 'bg-gradient-to-br from-violet-600 to-violet-700 text-white shadow-lg shadow-violet-600/30'
+                : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/5'
+            }`}
           >
             <Icons.MessageSquare className="w-4 h-4" />
             {comments.length > 0 && !isCommentPanelOpen && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-[10px] text-white font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-br from-rose-500 to-rose-600 text-[10px] text-white font-bold rounded-full flex items-center justify-center shadow-lg shadow-rose-500/50 animate-pulse">
                 {comments.length}
               </span>
             )}
@@ -551,16 +612,17 @@ export const TeamEditorPage: React.FC<TeamEditorPageProps> = ({
 
           <button
             onClick={() => setIsAIPanelOpen(!isAIPanelOpen)}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${isAIPanelOpen
-                ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/20'
-                : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
-              }`}
+            className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
+              isAIPanelOpen
+                ? 'bg-gradient-to-r from-violet-600 via-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-600/30'
+                : 'bg-white/5 text-slate-400 hover:text-white hover:bg-gradient-to-r hover:from-violet-600/20 hover:to-indigo-600/20 border border-white/5'
+            }`}
           >
             <Icons.Sparkles className="w-4 h-4" />
             <span>AI</span>
           </button>
 
-          <div className="h-6 w-px bg-white/10 mx-1" />
+          <div className="h-8 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-1" />
 
           <EditorSaveActions
             onSaveDraft={handleSaveDraft}

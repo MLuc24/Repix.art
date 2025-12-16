@@ -581,6 +581,7 @@ const App = () => {
         }
         return <CasualGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'my-images':
+        // All pro-tier roles (pro, freelancer, team) use ProMyImages
         if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProMyImages onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
         }

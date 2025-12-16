@@ -42,6 +42,108 @@ export const mockTeamMembers: TeamMember[] = [
     role: 'editor',
     email: 'emma@rocketstudio.com',
   },
+  {
+    id: 'member-5',
+    name: 'James Lee',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop',
+    role: 'editor',
+    email: 'james@rocketstudio.com',
+  },
+  {
+    id: 'member-6',
+    name: 'Lisa Wang',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop',
+    role: 'editor',
+    email: 'lisa@rocketstudio.com',
+  },
+];
+
+// Realtime Collaboration Mock Data
+export const mockActiveUsers = [
+  {
+    user: mockTeamMembers[2], // Mike Wilson (current user)
+    currentTool: 'Filters',
+    lastActive: new Date().toISOString(),
+  },
+  {
+    user: mockTeamMembers[1], // Sarah Chen
+    currentTool: 'Adjust',
+    lastActive: new Date(Date.now() - 15000).toISOString(), // 15s ago
+    isTyping: false,
+  },
+  {
+    user: mockTeamMembers[3], // Emma Davis
+    currentTool: 'Crop',
+    lastActive: new Date(Date.now() - 25000).toISOString(), // 25s ago
+  },
+  {
+    user: mockTeamMembers[4], // James Lee
+    currentTool: 'Presets',
+    lastActive: new Date(Date.now() - 40000).toISOString(), // 40s ago
+  },
+  {
+    user: mockTeamMembers[5], // Lisa Wang
+    currentTool: null,
+    lastActive: new Date(Date.now() - 120000).toISOString(), // 2min ago
+  },
+  {
+    user: mockTeamMembers[0], // Alex Johnson
+    currentTool: null,
+    lastActive: new Date(Date.now() - 180000).toISOString(), // 3min ago
+  },
+];
+
+// Mock cursors for realtime collaboration visualization
+export const mockUserCursors = [
+  {
+    userId: 'member-2',
+    userName: 'Sarah',
+    position: { x: 45, y: 30 }, // percentage from viewport center
+    color: '#ec4899', // pink
+  },
+  {
+    userId: 'member-4',
+    userName: 'Emma',
+    position: { x: 60, y: 50 },
+    color: '#8b5cf6', // violet
+  },
+  {
+    userId: 'member-5',
+    userName: 'James',
+    position: { x: 35, y: 65 },
+    color: '#06b6d4', // cyan
+  },
+];
+
+export const mockRealtimeActivities = [
+  {
+    id: 'activity-1',
+    user: mockTeamMembers[1],
+    action: 'adjusted exposure to +15',
+    timestamp: '2 min ago',
+    icon: 'Sliders' as const,
+  },
+  {
+    id: 'activity-2',
+    user: mockTeamMembers[3],
+    action: 'applied Leica preset',
+    timestamp: '5 min ago',
+    icon: 'Sparkles' as const,
+  },
+  {
+    id: 'activity-3',
+    user: mockTeamMembers[0],
+    action: 'marked image as ready',
+    timestamp: '8 min ago',
+    icon: 'CheckCircle' as const,
+  },
+  {
+    id: 'activity-4',
+    user: mockTeamMembers[1],
+    action: 'added a comment',
+    timestamp: '12 min ago',
+    icon: 'MessageSquare' as const,
+  },
 ];
 
 export const mockTeamContext: TeamContext = {

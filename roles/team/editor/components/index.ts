@@ -16,3 +16,11 @@ export { BatchEditToggle } from './BatchEditToggle';
 export { BatchFilmstrip } from './BatchFilmstrip';
 export { BatchActionPanel } from './BatchActionPanel';
 export { QuickReviewControls } from './QuickReviewControls';
+
+// Realtime Collaboration
+export {
+  RealtimePresence,
+  RealtimeActivityFeed,
+  RealtimeUserCursors,
+  LiveEditIndicator,
+} from './RealtimeCollaboration';

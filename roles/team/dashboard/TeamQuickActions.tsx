@@ -34,7 +34,7 @@ const QUICK_ACTIONS: QuickAction[] = [
         label: 'Team Assets',
         description: 'Shared image library',
         icon: <Icons.Image className="w-6 h-6" />,
-        path: 'my-images',
+        path: 'team-assets',
         color: 'from-violet-500 to-purple-500',
     },
     {
