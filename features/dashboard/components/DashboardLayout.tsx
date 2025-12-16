@@ -66,7 +66,6 @@ const TEAM_SIDEBAR_ITEMS = [
   { id: 'projects', label: 'Team Projects', icon: <Icons.Briefcase className="w-5 h-5" /> },
   { id: 'team-assets', label: 'Team Assets', icon: <Icons.Folder className="w-5 h-5" /> },
   { id: 'brand-kit', label: 'Brand Kit', icon: <Icons.Sparkles className="w-5 h-5" /> },
-  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> }, // Reuse from Pro/Freelancer
   { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
   { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
 ];

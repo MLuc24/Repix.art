@@ -29,7 +29,38 @@ export const TeamAssetDetailPanel = ({ asset, onClose, onAction }: TeamAssetDeta
 
                 {/* Title & Actions */}
                 <div>
-                    <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{asset.title}</h2>
+                    <div className="flex items-start justify-between mb-4">
+                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{asset.title}</h2>
+                        <div className={`
+                            px-2 py-1 rounded-md text-white text-xs font-bold flex items-center gap-1
+                            ${asset.isShared 
+                                ? 'bg-blue-600 border border-blue-400/30' 
+                                : 'bg-violet-600 border border-violet-400/30'
+                            }
+                        `}>
+                            {asset.isShared ? <Icons.User className="w-3 h-3" /> : <Icons.User className="w-3 h-3" />}
+                            {asset.isShared ? 'Team' : 'Personal'}
+                        </div>
+                    </div>
+
+                    {/* Cross-Tab Primary Action */}
+                    {asset.isShared ? (
+                        <button
+                            onClick={() => onAction('save-to-personal', asset)}
+                            className="w-full mb-2 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold shadow-lg shadow-violet-500/30 transition-all"
+                        >
+                            <Icons.Download className="w-4 h-4" />
+                            Save to My Assets
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => onAction('share-to-team', asset)}
+                            className="w-full mb-2 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white rounded-lg text-sm font-semibold shadow-lg shadow-blue-500/30 transition-all"
+                        >
+                            <Icons.Upload className="w-4 h-4" />
+                            Share to Team
+                        </button>
+                    )}
 
                     <div className="grid grid-cols-2 gap-2">
                         <button
@@ -60,7 +91,7 @@ export const TeamAssetDetailPanel = ({ asset, onClose, onAction }: TeamAssetDeta
                         className="w-full mt-2 flex items-center justify-center gap-2 py-2 border border-red-200 dark:border-red-900/30 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium transition-colors"
                     >
                         <Icons.Trash className="w-4 h-4" />
-                        Delete from Team
+                        Delete {asset.isShared ? 'from Team' : 'Asset'}
                     </button>
                 </div>
 
