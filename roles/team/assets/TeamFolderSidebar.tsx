@@ -8,6 +8,7 @@ interface TeamFolderSidebarProps {
     onSelectFolder: (id: string | null) => void;
     viewMode: 'personal' | 'shared';
     folders: AssetFolder[];
+    onCreateFolder: () => void;
 }
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -18,18 +19,12 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     'user': Icons.User,
 };
 
-export const TeamFolderSidebar = ({ activeFolderId, onSelectFolder, viewMode, folders }: TeamFolderSidebarProps) => {
+export const TeamFolderSidebar = ({ activeFolderId, onSelectFolder, viewMode, folders, onCreateFolder }: TeamFolderSidebarProps) => {
     return (
         <div className="flex flex-col h-full p-5">
             {/* New Folder Button - Premium Style */}
             <button
-                onClick={() => {
-                    const folderName = prompt('Enter folder name:');
-                    if (folderName) {
-                        alert(`Creating folder "${folderName}" in ${viewMode === 'personal' ? 'My Assets' : 'Team Assets'}...`);
-                        // TODO: Implement actual folder creation
-                    }
-                }}
+                onClick={onCreateFolder}
                 className="group w-full flex items-center justify-center gap-2 px-3 py-2 mb-5 text-xs font-semibold bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white rounded-lg shadow-md shadow-blue-500/20 transition-all duration-300 hover:scale-105 active:scale-95"
                 title="Create a new folder"
             >

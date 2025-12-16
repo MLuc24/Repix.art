@@ -15,6 +15,8 @@ import { MoveToPersonalModal } from './MoveToPersonalModal';
 import { UnifiedSearchModal } from './UnifiedSearchModal';
 import { SmartSuggestions } from './SmartSuggestions';
 import { CrossTabActivityFeed } from './CrossTabActivityFeed';
+import { NewFolderModal } from './NewFolderModal';
+import { BatchActionBar } from './BatchActionBar';
 
 type ViewMode = 'personal' | 'shared';
 
@@ -33,6 +35,9 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
     const [isUnifiedSearchOpen, setIsUnifiedSearchOpen] = useState(false);
     const [selectedAssetsForAction, setSelectedAssetsForAction] = useState<TeamAssetItem[]>([]);
     const [showActivityFeed, setShowActivityFeed] = useState(true);
+    const [isNewFolderModalOpen, setIsNewFolderModalOpen] = useState(false);
+    const [isBatchMode, setIsBatchMode] = useState(false);
+    const [batchSelectedAssets, setBatchSelectedAssets] = useState<TeamAssetItem[]>([]);
 
     // Filter assets based on view mode
     const viewAssets = useMemo(() => {
@@ -122,6 +127,7 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
                         onSelectFolder={setActiveFolderId}
                         viewMode={viewMode}
                         folders={viewFolders}
+                        onCreateFolder={() => setIsNewFolderModalOpen(true)}
                     />
                 </aside>
 
@@ -268,17 +274,22 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
                                         Upload
                                     </button>
 
-                                    {/* Batch Edit Button - Now functional */}
+                                    {/* Batch Edit Button - Functional */}
                                     <button
                                         onClick={() => {
-                                            // Toggle batch selection mode
-                                            alert('Batch Edit Mode: Select multiple assets by clicking on them. Actions will appear in a bottom bar.');
+                                            setIsBatchMode(!isBatchMode);
+                                            if (isBatchMode) {
+                                                setBatchSelectedAssets([]);
+                                            }
                                         }}
-                                        className="px-4 py-1.5 bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg font-semibold text-xs border border-slate-700/50 hover:border-slate-600 transition-all duration-300 flex items-center gap-1.5"
-                                        title="Select multiple assets for batch operations"
+                                        className={`px-4 py-1.5 rounded-lg font-semibold text-xs border transition-all duration-300 flex items-center gap-1.5 ${isBatchMode
+                                            ? 'bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-500/30'
+                                            : 'bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700/50 hover:border-slate-600'
+                                            }`}
+                                        title={isBatchMode ? 'Exit batch mode' : 'Select multiple assets'}
                                     >
                                         <Icons.Settings className="w-3.5 h-3.5" />
-                                        Batch Edit
+                                        {isBatchMode ? 'Exit Batch' : 'Batch Edit'}
                                     </button>
                                 </div>
                             </div>
@@ -335,9 +346,21 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
                                         >
                                             <TeamAssetCard
                                                 asset={asset}
-                                                onAssetClick={() => setSelectedAsset(asset)}
+                                                onAssetClick={() => {
+                                                    if (isBatchMode) {
+                                                        // Toggle selection in batch mode
+                                                        setBatchSelectedAssets(prev =>
+                                                            prev.find(a => a.id === asset.id)
+                                                                ? prev.filter(a => a.id !== asset.id)
+                                                                : [...prev, asset]
+                                                        );
+                                                    } else {
+                                                        // Open detail panel in normal mode
+                                                        setSelectedAsset(asset);
+                                                    }
+                                                }}
                                                 onAction={handleAction}
-                                                isSelected={selectedAsset?.id === asset.id}
+                                                isSelected={isBatchMode ? batchSelectedAssets.some(a => a.id === asset.id) : selectedAsset?.id === asset.id}
                                             />
                                         </div>
                                     ))}
@@ -459,6 +482,44 @@ export const TeamAssetsPage = ({ onLogout, onNavigate }: { onLogout: () => void,
                     }}
                 />
             )}
+
+            {/* New Folder Modal */}
+            {isNewFolderModalOpen && (
+                <NewFolderModal
+                    isOpen={isNewFolderModalOpen}
+                    onClose={() => setIsNewFolderModalOpen(false)}
+                    onConfirm={(folderName, icon) => {
+                        console.log(`Creating folder "${folderName}" with icon "${icon}" in ${viewMode}`);
+                        // TODO: Implement actual folder creation API call
+                        setIsNewFolderModalOpen(false);
+                    }}
+                    viewMode={viewMode}
+                />
+            )}
+
+            {/* Batch Action Bar */}
+            <BatchActionBar
+                selectedAssets={batchSelectedAssets}
+                onClearSelection={() => setBatchSelectedAssets([])}
+                onDelete={() => {
+                    console.log('Deleting assets:', batchSelectedAssets.map(a => a.id));
+                    // TODO: Implement delete API call
+                    setBatchSelectedAssets([]);
+                }}
+                onMove={() => {
+                    console.log('Moving assets:', batchSelectedAssets.map(a => a.id));
+                    // TODO: Show move to folder modal
+                }}
+                onDownload={() => {
+                    console.log('Downloading assets:', batchSelectedAssets.map(a => a.id));
+                    // TODO: Implement download
+                }}
+                onShare={viewMode === 'personal' ? () => {
+                    setSelectedAssetsForAction(batchSelectedAssets);
+                    setIsShareToTeamModalOpen(true);
+                } : undefined}
+                viewMode={viewMode}
+            />
         </DashboardLayout>
     );
 };
