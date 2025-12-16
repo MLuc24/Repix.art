@@ -8,6 +8,7 @@ interface TeamAssetCardProps {
     isSelected?: boolean;
     onAssetClick: () => void;
     onAction: (action: string) => void;
+    showCrossTabActions?: boolean;
 }
 
 const getBadge = (source: string) => {
@@ -52,7 +53,7 @@ const formatDate = (dateString: string) => {
     return `${Math.floor(days / 365)} years ago`;
 };
 
-export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction }: TeamAssetCardProps) => {
+export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction, showCrossTabActions = true }: TeamAssetCardProps) => {
     const badge = getBadge(asset.source);
 
     return (
@@ -80,7 +81,7 @@ export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction }: Tea
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
 
-                    {/* Badge - Top left like reference */}
+                    {/* Badges - Top corners */}
                     <div className="absolute top-2 left-2 z-10">
                         <div className={`
                             px-2 py-1 rounded-md ${badge.bg} text-white 
@@ -91,25 +92,67 @@ export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction }: Tea
                         </div>
                     </div>
 
+                    {/* Shared/Personal indicator */}
+                    {showCrossTabActions && (
+                        <div className="absolute top-2 right-2 z-10">
+                            <div className={`
+                                px-2 py-1 rounded-md text-white 
+                                flex items-center gap-1 shadow-lg text-xs font-bold backdrop-blur-sm
+                                ${asset.isShared 
+                                    ? 'bg-blue-600/90 border border-blue-400/30' 
+                                    : 'bg-violet-600/90 border border-violet-400/30'
+                                }
+                            `}>
+                                {asset.isShared ? <Icons.User className="w-3 h-3" /> : <Icons.User className="w-3 h-3" />}
+                                {asset.isShared ? 'Team' : 'Mine'}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Hover overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
                         <div className="w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                            <div className="flex items-center gap-1.5 mb-2">
+                            <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                                {/* Cross-tab action button */}
+                                {showCrossTabActions && (
+                                    asset.isShared ? (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onAction('save-to-personal'); }}
+                                            className="flex-1 px-2 py-1.5 rounded-lg bg-violet-600/90 backdrop-blur hover:bg-violet-600 text-white border border-violet-400/30 transition-all text-xs font-medium flex items-center justify-center gap-1"
+                                            title="Save to My Assets"
+                                        >
+                                            <Icons.Download className="w-3.5 h-3.5" />
+                                            Save
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onAction('share-to-team'); }}
+                                            className="flex-1 px-2 py-1.5 rounded-lg bg-blue-600/90 backdrop-blur hover:bg-blue-600 text-white border border-blue-400/30 transition-all text-xs font-medium flex items-center justify-center gap-1"
+                                            title="Share to Team"
+                                        >
+                                            <Icons.Upload className="w-3.5 h-3.5" />
+                                            Share
+                                        </button>
+                                    )
+                                )}
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onAction('download'); }}
                                     className="p-1.5 rounded-lg bg-white/10 backdrop-blur hover:bg-white/20 text-white border border-white/20 transition-all"
+                                    title="Download"
                                 >
                                     <Icons.Download className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onAction('add-to-project'); }}
                                     className="p-1.5 rounded-lg bg-white/10 backdrop-blur hover:bg-white/20 text-white border border-white/20 transition-all"
+                                    title="Add to Project"
                                 >
                                     <Icons.Plus className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onAction('delete'); }}
                                     className="p-1.5 rounded-lg bg-red-500/20 backdrop-blur hover:bg-red-500 text-white border border-red-500/30 transition-all"
+                                    title="Delete"
                                 >
                                     <Icons.Trash className="w-3.5 h-3.5" />
                                 </button>
@@ -125,9 +168,7 @@ export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction }: Tea
                     </h3>
                     <div className="flex items-center justify-between text-xs text-slate-400">
                         <span>{formatDate(asset.createdAt)}</span>
-                        {asset.meta?.dimensions && (
-                            <span>{asset.meta.dimensions}</span>
-                        )}
+                        <span>{asset.meta.width}x{asset.meta.height}</span>
                     </div>
 
                     {/* Edit Button - Inspired by reference */}
