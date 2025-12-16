@@ -3,7 +3,7 @@ import React from 'react';
 import { Icons } from '../../../../shared/components/Icons';
 import { CreditInsight } from '../types';
 
-export const CreditInsightCard = ({ insight }: { insight: CreditInsight }) => {
+export const CreditInsightCard: React.FC<{ insight: CreditInsight }> = ({ insight }) => {
   const getStyle = () => {
     switch(insight.type) {
       case 'warning': return { icon: <Icons.AlertTriangle className="w-5 h-5" />, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20' };

@@ -19,7 +19,7 @@ const getBadge = (source: string) => {
     }
 };
 
-export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction }: TeamAssetCardProps) => {
+export const TeamAssetCard: React.FC<TeamAssetCardProps> = ({ asset, isSelected, onAssetClick, onAction }) => {
     const badge = getBadge(asset.source);
 
     return (
