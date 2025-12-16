@@ -12,85 +12,133 @@ interface TeamAssetCardProps {
 
 const getBadge = (source: string) => {
     switch (source) {
-        case 'generated': return { icon: <Icons.Sparkles className="w-3 h-3" />, label: 'AI', color: 'bg-violet-500' };
-        case 'upload': return { icon: <Icons.Upload className="w-3 h-3" />, label: 'UP', color: 'bg-blue-500' };
-        case 'remix': return { icon: <Icons.Wand className="w-3 h-3" />, label: 'RMX', color: 'bg-fuchsia-500' };
-        default: return { icon: <Icons.Image className="w-3 h-3" />, label: 'IMG', color: 'bg-slate-500' };
+        case 'generated':
+            return {
+                icon: <Icons.Sparkles className="w-3.5 h-3.5" />,
+                label: 'AI',
+                bg: 'bg-violet-600'
+            };
+        case 'upload':
+            return {
+                icon: <Icons.Image className="w-3.5 h-3.5" />,
+                label: 'IMG',
+                bg: 'bg-slate-600'
+            };
+        case 'remix':
+            return {
+                icon: <Icons.Wand className="w-3.5 h-3.5" />,
+                label: 'RMX',
+                bg: 'bg-pink-600'
+            };
+        default:
+            return {
+                icon: <Icons.Image className="w-3.5 h-3.5" />,
+                label: 'IMG',
+                bg: 'bg-slate-600'
+            };
     }
+};
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return 'Today';
+    if (days === 1) return '1 day ago';
+    if (days < 30) return `${days} days ago`;
+    if (days < 365) return `${Math.floor(days / 30)} months ago`;
+    return `${Math.floor(days / 365)} years ago`;
 };
 
 export const TeamAssetCard = ({ asset, isSelected, onAssetClick, onAction }: TeamAssetCardProps) => {
     const badge = getBadge(asset.source);
 
     return (
-        <div
-            className={`
-        group relative w-full aspect-square rounded-2xl overflow-hidden 
-        bg-white dark:bg-[#1a1b26] 
-        border transition-all duration-300 animate-fade-in-up cursor-pointer
-        ${isSelected
-                    ? 'border-blue-500 ring-2 ring-blue-500/30'
-                    : 'border-slate-200 dark:border-white/5 hover:border-blue-500/50 dark:hover:border-white/20 hover:shadow-xl'
-                }
-      `}
-            onClick={onAssetClick}
-        >
-            <img src={asset.src} alt={asset.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-100 group-hover:opacity-90" />
+        <div className="group">
+            {/* Card with glow border - Inspired by reference */}
+            <div
+                className={`
+                    relative rounded-2xl overflow-hidden cursor-pointer
+                    transition-all duration-500
+                    ${isSelected
+                        ? 'ring-2 ring-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.5)]'
+                        : 'ring-1 ring-slate-700/50 hover:ring-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]'
+                    }
+                `}
+                onClick={onAssetClick}
+            >
+                {/* Glow effect - Inspired by reference */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-            {/* Type Badge */}
-            <div className="absolute top-2 right-2 z-10">
-                <div className={`px-1.5 py-1 rounded-md ${badge.color} text-white flex items-center gap-1 shadow-lg`}>
-                    {badge.icon}
-                    <span className="text-[9px] font-bold uppercase">{badge.label}</span>
-                </div>
-            </div>
+                {/* Image Container */}
+                <div className="aspect-square relative bg-slate-800">
+                    <img
+                        src={asset.src}
+                        alt={asset.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
 
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-
-                {/* Owner Info & Title */}
-                <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform mb-3">
-                    <div className="flex items-center gap-2 mb-1">
-                        {asset.ownerAvatar ? (
-                            <img src={asset.ownerAvatar} alt="" className="w-4 h-4 rounded-full border border-white/20" />
-                        ) : (
-                            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-[8px] text-white font-bold">
-                                {asset.ownerString.charAt(0)}
-                            </div>
-                        )}
-                        <span className="text-[10px] text-slate-300">{asset.ownerString}</span>
+                    {/* Badge - Top left like reference */}
+                    <div className="absolute top-2 left-2 z-10">
+                        <div className={`
+                            px-2 py-1 rounded-md ${badge.bg} text-white 
+                            flex items-center gap-1 shadow-lg text-xs font-bold
+                        `}>
+                            {badge.icon}
+                            {badge.label}
+                        </div>
                     </div>
-                    <p className="text-white text-xs font-bold truncate drop-shadow-md">{asset.title}</p>
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                        <div className="w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                            <div className="flex items-center gap-1.5 mb-2">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onAction('download'); }}
+                                    className="p-1.5 rounded-lg bg-white/10 backdrop-blur hover:bg-white/20 text-white border border-white/20 transition-all"
+                                >
+                                    <Icons.Download className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onAction('add-to-project'); }}
+                                    className="p-1.5 rounded-lg bg-white/10 backdrop-blur hover:bg-white/20 text-white border border-white/20 transition-all"
+                                >
+                                    <Icons.Plus className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onAction('delete'); }}
+                                    className="p-1.5 rounded-lg bg-red-500/20 backdrop-blur hover:bg-red-500 text-white border border-red-500/30 transition-all"
+                                >
+                                    <Icons.Trash className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform delay-75">
+                {/* Metadata section - Inspired by reference */}
+                <div className="bg-slate-900/95 backdrop-blur-sm p-3 border-t border-slate-800/50">
+                    <h3 className="text-white text-sm font-semibold truncate mb-1">
+                        {asset.title}
+                    </h3>
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span>{formatDate(asset.createdAt)}</span>
+                        {asset.meta?.dimensions && (
+                            <span>{asset.meta.dimensions}</span>
+                        )}
+                    </div>
+
+                    {/* Edit Button - Inspired by reference */}
                     <button
-                        onClick={(e) => { e.stopPropagation(); onAction('open-editor'); }}
-                        className="flex-1 py-1.5 rounded-lg bg-white text-black text-[10px] font-bold hover:bg-slate-200 transition-colors shadow-lg"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onAction('open-editor');
+                        }}
+                        className="w-full mt-2 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-95"
                     >
-                        Open
-                    </button>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onAction('add-to-project'); }}
-                        title="Add to Project"
-                        className="p-1.5 rounded-lg bg-black/40 backdrop-blur hover:bg-black/60 text-white border border-white/10"
-                    >
-                        <Icons.Plus className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onAction('download'); }}
-                        title="Download"
-                        className="p-1.5 rounded-lg bg-black/40 backdrop-blur hover:bg-black/60 text-white border border-white/10"
-                    >
-                        <Icons.Download className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onAction('delete'); }}
-                        title="Delete (Team)"
-                        className="p-1.5 rounded-lg bg-red-500/20 backdrop-blur hover:bg-red-500 text-red-100 hover:text-white border border-red-500/30"
-                    >
-                        <Icons.Trash className="w-3.5 h-3.5" />
+                        Edit
                     </button>
                 </div>
             </div>
