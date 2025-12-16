@@ -74,6 +74,8 @@ export const TeamAssetsPage = ({ onLogout, onNavigate, user }: { onLogout: () =>
                         activeFolderId={activeFolderId}
                         onSelectFolder={setActiveFolderId}
                         viewMode="shared"
+                        folders={MOCK_FOLDERS}
+                        onCreateFolder={() => console.log('Create folder request')}
                     />
                 </div>
 
