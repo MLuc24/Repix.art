@@ -4,10 +4,27 @@ import { Icons } from '../../../shared/components/Icons';
 import { EditorSlider } from './EditorUI';
 import { NeonButton } from '../../../shared/components/GlassUI';
 
-export const ProCropPanel = ({ rotation, onRotationChange }: { rotation: number, onRotationChange: (val: number) => void }) => {
+export const ProCropPanel = ({ 
+  rotation, 
+  onRotationChange,
+  activeRatio = 'original',
+  onRatioChange,
+  flipH = false,
+  onFlipHChange,
+  flipV = false,
+  onFlipVChange
+}: { 
+  rotation: number; 
+  onRotationChange: (val: number) => void;
+  activeRatio?: string;
+  onRatioChange?: (ratio: string) => void;
+  flipH?: boolean;
+  onFlipHChange?: (val: boolean) => void;
+  flipV?: boolean;
+  onFlipVChange?: (val: boolean) => void;
+}) => {
   // Lifted rotation state to parent
   const setRotation = onRotationChange; // Alias for compatibility
-  const [activeRatio, setActiveRatio] = useState('original');
 
   const ratios = [
     { id: 'original', label: 'Original', icon: <Icons.Image className="w-3 h-3" /> },
@@ -24,7 +41,12 @@ export const ProCropPanel = ({ rotation, onRotationChange }: { rotation: number,
           <Icons.Layout className="text-blue-400" /> Crop & Rotate
         </h3>
         <button 
-          onClick={() => { setRotation(0); setActiveRatio('original'); }}
+          onClick={() => { 
+            setRotation(0); 
+            onRatioChange?.('original');
+            onFlipHChange?.(false);
+            onFlipVChange?.(false);
+          }}
           className="text-xs text-slate-500 hover:text-white transition-colors"
         >
           Reset
@@ -40,7 +62,7 @@ export const ProCropPanel = ({ rotation, onRotationChange }: { rotation: number,
             {ratios.map((r) => (
               <button
                 key={r.id}
-                onClick={() => setActiveRatio(r.id)}
+                onClick={() => onRatioChange?.(r.id)}
                 className={`
                   flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all
                   ${activeRatio === r.id 
@@ -71,15 +93,20 @@ export const ProCropPanel = ({ rotation, onRotationChange }: { rotation: number,
            </div>
 
            <div className="flex gap-3">
-             <button className="flex-1 py-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+             <button 
+               onClick={() => onFlipHChange?.(!flipH)}
+               className={`flex-1 py-3 rounded-xl border transition-colors flex items-center justify-center gap-2 ${flipH ? 'bg-blue-600/20 border-blue-500 text-blue-300' : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300 hover:text-white'}`}
+             >
                <Icons.Refresh className="w-4 h-4 scale-x-[-1]" /> Flip H
              </button>
-             <button className="flex-1 py-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+             <button 
+               onClick={() => onFlipVChange?.(!flipV)}
+               className={`flex-1 py-3 rounded-xl border transition-colors flex items-center justify-center gap-2 ${flipV ? 'bg-blue-600/20 border-blue-500 text-blue-300' : 'bg-white/5 border-white/5 hover:bg-white/10 text-slate-300 hover:text-white'}`}
+             >
                <Icons.Refresh className="w-4 h-4 rotate-90" /> Flip V
              </button>
            </div>
         </section>
-
       </div>
 
       <div className="pt-6 mt-auto border-t border-white/10">

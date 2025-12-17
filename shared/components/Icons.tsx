@@ -207,4 +207,12 @@ export const Icons = {
   Times: (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
   ),
+  Gemini: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" {...props}>
+      <path d="M10.748 1.83a1.498 1.498 0 0 1 2.504 0l1.725 3.195a9.07 9.07 0 0 0 4.197 4.197l3.195 1.725a1.498 1.498 0 0 1 0 2.504l-3.195 1.725a9.07 9.07 0 0 0-4.197 4.197l-1.725 3.195a1.498 1.498 0 0 1-2.504 0l-1.725-3.195a9.07 9.07 0 0 0-4.197-4.197L1.63 12.95a1.498 1.498 0 0 1 0-2.504l3.195-1.725a9.07 9.07 0 0 0 4.197-4.197l1.725-3.195ZM16.32 16.32a.75.75 0 0 1 1.06 0l1.096 1.096a.75.75 0 0 1 0 1.06l-1.096 1.096a.75.75 0 0 1-1.06 0l-1.096-1.096a.75.75 0 0 1 0-1.06l1.096-1.096Z" />
+    </svg>
+  ),
+  Save: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+  ),
 };

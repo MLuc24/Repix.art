@@ -103,27 +103,36 @@ interface ToolButtonProps {
   isActive?: boolean;
   onClick: () => void;
   key?: React.Key;
+  locked?: boolean;
 }
 
-export const ToolButton = ({ icon, label, isActive, onClick }: ToolButtonProps) => (
+export const ToolButton = ({ icon, label, isActive, onClick, locked }: ToolButtonProps) => (
   <button 
     onClick={onClick}
     className="group relative flex items-center justify-center p-1 transition-all duration-300"
     title={label}
   >
     <div className={`
-      w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
+      relative w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
       ${isActive 
         ? 'bg-[#ccff00] text-black shadow-lg shadow-[#ccff00]/20 scale-100 rotate-0' 
-        : 'text-slate-400 hover:text-white hover:bg-white/10'
+        : locked 
+          ? 'text-slate-600 bg-white/5 cursor-not-allowed'
+          : 'text-slate-400 hover:text-white hover:bg-white/10'
       }
     `}>
       {React.cloneElement(icon as React.ReactElement, { className: `w-4 h-4 ${isActive ? 'text-black' : ''}` })}
+      
+      {locked && (
+        <div className="absolute -top-1 -right-1 bg-black/80 rounded-full p-0.5 border border-white/20">
+          <Icons.Lock className="w-2.5 h-2.5 text-amber-500" />
+        </div>
+      )}
     </div>
     
-    {/* Tooltip Label (since we are icon-only now) */}
-    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-      {label}
+    {/* Tooltip Label */}
+    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+      {label} {locked && '(Locked)'}
     </span>
   </button>
 );

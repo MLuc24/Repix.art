@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Icons } from '../../../../shared/components/Icons';
 import { ProFilterCard, ProFilterType } from './ProFilterCard';
 import { FilterDetailPopover } from './FilterDetailPopover';
-import { QuickPresetSlots } from './QuickPresetSlots';
 import { FilterCompareToggle } from './FilterCompareToggle';
 
 const PRO_FILTERS_LIST: ProFilterType[] = [
@@ -44,13 +43,12 @@ export const ProFiltersPanel = ({ activeId, onSelect }: { activeId: string, onSe
             <div className="p-1.5 bg-fuchsia-500/10 rounded-lg">
               <Icons.Wand className="w-4 h-4 text-fuchsia-400" /> 
             </div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-wide">Filters</h3>
+            <h3 className="text-lg font-black text-white uppercase tracking-wider">FILTERS</h3>
           </div>
           <FilterCompareToggle />
         </div>
 
-        {/* Quick Slots */}
-        <QuickPresetSlots />
+
       </div>
 
       {/* Scrollable Grid */}

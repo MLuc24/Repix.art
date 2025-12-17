@@ -14,6 +14,8 @@ import { Footer } from './shared/components/Footer'; // IMPORT FOOTER
 import { PartnersMarquee } from './shared/components/PartnersMarquee'; // IMPORT PARTNERS
 import { Header } from './shared/components/Header'; // IMPORT HEADER 3D
 import { AuthPage } from './features/auth/AuthPage'; // IMPORT FEATURE
+import { UnifiedDashboardPage } from './features/dashboard/pages/UnifiedDashboardPage'; // IMPORT UNIFIED DASHBOARD
+import { UnifiedGeneratorPage } from './features/generator/pages/UnifiedGeneratorPage'; // IMPORT UNIFIED GENERATOR
 import { CasualDashboard } from './roles/casual/pages/CasualDashboard'; // IMPORT CASUAL DASHBOARD
 import { ProDashboard } from './roles/pro/pages/ProDashboard'; // IMPORT PRO DASHBOARD
 import { CasualEditor } from './roles/casual/pages/CasualEditor'; // IMPORT CASUAL EDITOR
@@ -376,6 +378,8 @@ const App = () => {
     } else {
       setUserRole('casual');
     }
+    // Gift 100 AI Agent Credits
+    setUserCredits(prev => prev + 100);
     setCurrentView('dashboard');
   }
 
@@ -394,7 +398,7 @@ const App = () => {
       if (prev === 'freelancer') return 'team';
       return 'casual'; // team → casual
     });
-    setCurrentView('dashboard');
+    // Remove explicit reset to 'dashboard' so current view persists
   }
 
   const renderView = () => {
@@ -420,22 +424,13 @@ const App = () => {
           setCurrentView('auth');
         }} />;
       case 'dashboard':
-        // R4.2 Team Dashboard - Show Team-specific dashboard for Team role
-        if (userRole === 'team') {
-          return <TeamDashboardPage
-            onLogout={() => setCurrentView('landing')}
-            onNavigate={(path) => setCurrentView(path as ViewState)}
-          />;
-        }
-        // Pro, Freelancer use ProDashboard (advanced dashboard)
-        if (userRole === 'pro' || userRole === 'freelancer') {
-          return <ProDashboard
-            onLogout={() => setCurrentView('landing')}
-            onNavigate={(path) => setCurrentView(path as ViewState)}
-            isFreelancer={userRole === 'freelancer'}
-          />;
-        }
-        return <CasualDashboard onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} userCredits={userCredits} />;
+        // UNIFIED DASHBOARD FOR ALL ROLES
+        return <UnifiedDashboardPage 
+          userRole={userRole as any}
+          onLogout={() => setCurrentView('landing')} 
+          onNavigate={(path) => setCurrentView(path as ViewState)} 
+          userCredits={userCredits}
+        />;
 
       case 'projects':
         // Route to appropriate Projects page based on role
@@ -518,15 +513,12 @@ const App = () => {
       case 'settings':
         return <SettingsPage user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'editor':
-        // R4.10 - Team uses TeamEditorPage with team context
-        if (userRole === 'team') {
-          return <TeamEditorPage onBack={() => setCurrentView('dashboard')} />;
-        }
-        // Pro, Freelancer use Pro Editor
-        if (userRole === 'pro' || userRole === 'freelancer') {
-          return <EditorProLite onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;
-        }
-        return <CasualEditor onBack={() => setCurrentView('dashboard')} onExport={() => setCurrentView('export')} />;
+        // Use Unified Team Editor for ALL roles with role-based feature locking
+        return <TeamEditorPage 
+           userRole={userRole as any}
+           onBack={() => setCurrentView('dashboard')} 
+           onNavigate={(path) => setCurrentView(path as ViewState)} 
+        />;
       case 'export':
         if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
           return <ProExport onBack={() => setCurrentView('editor')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
@@ -569,17 +561,20 @@ const App = () => {
         }
         return <CasualCreditsLog onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'subscription':
-        return <CasualSubscription user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => {
-          if (path === 'dashboard' || path === 'auth') {
-            // Logic for upgrade
-          }
-          setCurrentView(path as ViewState)
-        }} />;
+        return <CasualSubscription 
+          user={currentUser} 
+          onLogout={() => setCurrentView('landing')} 
+          onNavigate={(path) => setCurrentView(path as ViewState)} 
+          onUpgrade={(planId) => {
+             if (planId === 'pro') setUserRole('pro');
+             else if (planId === 'freelance') setUserRole('freelancer');
+             else if (planId === 'agency') setUserRole('team');
+             else setUserRole('casual');
+          }}
+        />;
       case 'generator':
-        if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
-          return <ProGenerator user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
-        }
-        return <CasualGenerator onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
+        // Use ProGenerator for ALL roles (Casual is locked inside)
+        return <ProGenerator user={currentUser} onLogout={() => setCurrentView('landing')} onNavigate={(path) => setCurrentView(path as ViewState)} />;
       case 'my-images':
         // All pro-tier roles (pro, freelancer, team) use ProMyImages
         if (userRole === 'pro' || userRole === 'freelancer' || userRole === 'team') {
@@ -600,7 +595,7 @@ const App = () => {
             onClick={handleRoleToggle}
             className="bg-black/80 text-white text-xs px-3 py-1 rounded-full border border-white/20"
           >
-            Switch Role: {userRole.toUpperCase()}
+            Switch Role: {userRole === 'casual' ? 'FREE' : userRole === 'pro' ? 'PLUS' : userRole === 'freelancer' ? 'PRO' : 'BUSINESS'}
           </button>
         </div>
       )}

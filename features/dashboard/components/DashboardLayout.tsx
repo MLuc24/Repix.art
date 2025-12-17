@@ -7,10 +7,20 @@ import { MOCK_NOTIFICATIONS } from '../../../services/mock/notifications';
 // R4.1 Team Foundation Components
 import { TeamSwitcher, TeamBadge, CreateTeamModal, useWorkspace } from '../../../roles/team/foundation';
 
+// --- ROLE CONFIGURATION ---
+const ROLE_LEVELS = {
+  casual: 0,
+  pro: 1,
+  freelancer: 2,
+  team: 3,
+  agency: 4
+};
+
 interface SidebarItem {
   id: string;
   label: string;
   icon: React.ReactNode;
+  minRole?: keyof typeof ROLE_LEVELS;
 }
 
 interface DashboardLayoutProps {
@@ -23,67 +33,28 @@ interface DashboardLayoutProps {
   sidebarItems?: SidebarItem[]; // Optional override
 }
 
-// --- CASUAL MENU ---
-const CASUAL_SIDEBAR_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
-  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'remix', label: 'AI Remix', icon: <Icons.Sparkles className="w-5 h-5" /> },
-  { id: 'marketplace', label: 'Templates', icon: <Icons.Grid className="w-5 h-5" /> },
-  { id: 'backgrounds', label: 'Backgrounds', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'avatar', label: 'Avatars', icon: <Icons.User className="w-5 h-5" /> },
-];
+const UNIFIED_SIDEBAR_ITEMS: SidebarItem[] = [
+  // --- COMMON (CASUAL +) ---
+  { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" />, minRole: 'casual' },
+  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" />, minRole: 'casual' },
+  { id: 'remix', label: 'AI Remix', icon: <Icons.Sparkles className="w-5 h-5" />, minRole: 'casual' },
+  { id: 'marketplace', label: 'Templates', icon: <Icons.Grid className="w-5 h-5" />, minRole: 'casual' },
+  { id: 'backgrounds', label: 'Backgrounds', icon: <Icons.Image className="w-5 h-5" />, minRole: 'casual' },
+  { id: 'avatar', label: 'Avatars', icon: <Icons.User className="w-5 h-5" />, minRole: 'casual' },
 
-// --- PRO MENU ---
-const PRO_SIDEBAR_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
-  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
-  { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
-  { id: 'marketplace', label: 'Templates', icon: <Icons.Grid className="w-5 h-5" /> },
-  { id: 'backgrounds', label: 'Backgrounds', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'credits-log', label: 'Usage Log', icon: <Icons.FileText className="w-5 h-5" /> },
-];
+  // --- PRO FEATURES ---
+  { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" />, minRole: 'pro' },
+  { id: 'credits-log', label: 'Usage Log', icon: <Icons.FileText className="w-5 h-5" />, minRole: 'pro' },
 
-// --- FREELANCER MENU (Pro + Projects + Analytics) ---
-const FREELANCER_SIDEBAR_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
-  { id: 'freelancer-analytics', label: 'Performance', icon: <Icons.Activity className="w-5 h-5" /> },
-  { id: 'freelancer-billing', label: 'Client Costs', icon: <Icons.CreditCard className="w-5 h-5" /> }, // NEW
-  { id: 'projects', label: 'Client Projects', icon: <Icons.Briefcase className="w-5 h-5" /> },
-  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
-  { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
-];
+  // --- FREELANCER FEATURES ---
+  { id: 'projects', label: 'Client Projects', icon: <Icons.Briefcase className="w-5 h-5" />, minRole: 'freelancer' },
+  { id: 'freelancer-analytics', label: 'Performance', icon: <Icons.Activity className="w-5 h-5" />, minRole: 'freelancer' },
+  { id: 'freelancer-billing', label: 'Client Costs', icon: <Icons.CreditCard className="w-5 h-5" />, minRole: 'freelancer' },
 
-// --- TEAM MENU (Freelancer + Team Features) ---
-// Team extends Freelancer with collaboration features
-const TEAM_SIDEBAR_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
-  { id: 'team-members', label: 'Team Members', icon: <Icons.User className="w-5 h-5" /> }, // R4.8
-  { id: 'freelancer-analytics', label: 'Performance', icon: <Icons.TrendingUp className="w-5 h-5" /> },
-  { id: 'team-billing', label: 'Credits & Billing', icon: <Icons.CreditCard className="w-5 h-5" /> }, // R4.9
-  { id: 'freelancer-billing', label: 'Client Costs', icon: <Icons.Wallet className="w-5 h-5" /> },
-  { id: 'projects', label: 'Team Projects', icon: <Icons.Briefcase className="w-5 h-5" /> },
-  { id: 'team-assets', label: 'Team Assets', icon: <Icons.Folder className="w-5 h-5" /> },
-  { id: 'brand-kit', label: 'Brand Kit', icon: <Icons.Sparkles className="w-5 h-5" /> },
-  { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
-  { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
-];
-
-// --- AGENCY MENU (Team + Multi-Client Features) ---
-// Agency extends Team with multi-client management
-const AGENCY_SIDEBAR_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: <Icons.Layout className="w-5 h-5" /> },
-  { id: 'team-members', label: 'Team Members', icon: <Icons.User className="w-5 h-5" /> }, // R4.8
-  { id: 'freelancer-analytics', label: 'Analytics', icon: <Icons.Activity className="w-5 h-5" /> },
-  { id: 'team-billing', label: 'Credits & Billing', icon: <Icons.CreditCard className="w-5 h-5" /> }, // R4.9
-  { id: 'freelancer-billing', label: 'Client Invoices', icon: <Icons.Wallet className="w-5 h-5" /> },
-  { id: 'projects', label: 'All Projects', icon: <Icons.Briefcase className="w-5 h-5" /> },
-  { id: 'team-assets', label: 'Team Assets', icon: <Icons.Folder className="w-5 h-5" /> },
-  { id: 'brand-kit', label: 'Brand Kit', icon: <Icons.Sparkles className="w-5 h-5" /> },
-  { id: 'my-images', label: 'My Images', icon: <Icons.Image className="w-5 h-5" /> },
-  { id: 'generator', label: 'Generator', icon: <Icons.Wand className="w-5 h-5" /> },
-  { id: 'editor', label: 'Editor', icon: <Icons.Sliders className="w-5 h-5" /> },
+  // --- TEAM FEATURES ---
+  { id: 'team-members', label: 'Team Members', icon: <Icons.User className="w-5 h-5" />, minRole: 'team' },
+  { id: 'team-assets', label: 'Team Assets', icon: <Icons.Folder className="w-5 h-5" />, minRole: 'team' },
+  { id: 'brand-kit', label: 'Brand Kit', icon: <Icons.Sparkles className="w-5 h-5" />, minRole: 'team' },
 ];
 
 export const DashboardLayout = ({
@@ -126,17 +97,10 @@ export const DashboardLayout = ({
 
   const displayedCredits = currentCredits !== undefined ? currentCredits : user.credits;
 
-  // AUTO-SELECT SIDEBAR BASED ON ROLE IF NOT PROVIDED
-  const getSidebarItems = () => {
-    if (sidebarItems) return sidebarItems;
-    if (user.role === 'agency') return AGENCY_SIDEBAR_ITEMS;
-    if (user.role === 'team') return TEAM_SIDEBAR_ITEMS;
-    if (user.role === 'freelancer') return FREELANCER_SIDEBAR_ITEMS;
-    if (user.role === 'pro') return PRO_SIDEBAR_ITEMS;
-    return CASUAL_SIDEBAR_ITEMS;
-  };
+  // Determine User Role Level
+  const userRoleLevel = ROLE_LEVELS[user.role as keyof typeof ROLE_LEVELS] ?? 0;
 
-  const itemsToRender = getSidebarItems();
+  const itemsToRender = sidebarItems || UNIFIED_SIDEBAR_ITEMS;
 
   const toggleTheme = () => {
     setIsDarkMode(prev => !prev);
@@ -184,26 +148,51 @@ export const DashboardLayout = ({
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
           {itemsToRender.map((item) => {
+            // Check Locking based on role level
+            const itemMinLevel = item.minRole ? ROLE_LEVELS[item.minRole] : 0;
+            const isLocked = userRoleLevel < itemMinLevel;
+
             const isActive = activePage === item.id;
+            
             return (
               <button
                 key={item.id}
                 onClick={() => {
+                  if (isLocked) {
+                    onNavigate('subscription');
+                    return;
+                  }
                   onNavigate(item.id);
                   setIsMobileMenuOpen(false);
                 }}
                 className={`
-                  w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                  w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
                   ${isActive
                     ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20'
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                    : isLocked
+                      ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed hover:bg-slate-50 dark:hover:bg-white/5'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                   }
                 `}
               >
-                {React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, {
-                  className: `w-5 h-5 ${isActive ? 'text-white' : 'currentColor'}`
-                })}
-                {item.label}
+                <div className="flex items-center gap-3">
+                  {React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, {
+                    className: `w-5 h-5 ${isActive ? 'text-white' : isLocked ? 'text-slate-300 dark:text-slate-600' : 'currentColor'}`
+                  })}
+                  <span>{item.label}</span>
+                </div>
+                
+                {isLocked && (
+                  <>
+                     {/* Tag Style Annotation */}
+                     <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 group-hover:border-violet-500/30 group-hover:bg-violet-500/10 transition-all">
+                       <Icons.Lock className="w-2.5 h-2.5 text-slate-400 group-hover:text-violet-500" />
+                       <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 group-hover:text-violet-500">
+                         {item.minRole === 'pro' ? 'PLUS' : item.minRole === 'team' ? 'BUSINESS' : 'PRO'}
+                       </span>
+                     </div>
+                  </>
+                )}
               </button>
             );
           })}
@@ -253,11 +242,11 @@ export const DashboardLayout = ({
             <div className="flex-1 min-w-0 overflow-hidden">
               <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate capitalize">
-                {user.role === 'agency' ? 'Agency' : user.role === 'team' ? 'Team' : user.role === 'pro' ? 'Pro Plan' : user.role === 'freelancer' ? 'Freelancer' : 'Free Plan'}
+                {user.role === 'agency' ? 'Business' : user.role === 'team' ? 'Business' : user.role === 'pro' ? 'Plus Plan' : user.role === 'freelancer' ? 'Pro Plan' : 'Free Plan'}
               </p>
             </div>
 
-            {user.role === 'casual' && (
+            {user.role !== 'team' && user.role !== 'agency' && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();

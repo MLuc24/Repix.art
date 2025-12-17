@@ -81,33 +81,38 @@ export const GenAspectRatio = ({ value, onChange, disabled }: GenAspectRatioProp
 interface GenOutputSelectorProps {
   value: number;
   onChange: (val: number) => void;
+  maxAllowed?: number;
 }
 
-export const GenOutputSelector = ({ value, onChange }: GenOutputSelectorProps) => {
+export const GenOutputSelector = ({ value, onChange, maxAllowed = 4 }: GenOutputSelectorProps) => {
   const options = [
-    { count: 1, label: '1 Image', pro: false },
-    { count: 2, label: '2 Images', pro: false },
-    { count: 4, label: '4 Images', pro: true },
+    { count: 1, label: '1 Image' },
+    { count: 2, label: '2 Images' },
+    { count: 4, label: '4 Images' },
+    { count: 10, label: '10 Images' },
   ];
 
   return (
     <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/5">
-      {options.map((opt) => (
-        <button
-          key={opt.count}
-          onClick={() => onChange(opt.count)}
-          className={`
-            flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5
-            ${value === opt.count 
-              ? 'bg-white dark:bg-[#1a1b26] text-slate-900 dark:text-white shadow-sm' 
-              : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-            }
-          `}
-        >
-          {opt.label}
-          {opt.pro && value !== opt.count && <Icons.Lock className="w-2.5 h-2.5 text-amber-500" />}
-        </button>
-      ))}
+      {options.map((opt) => {
+        const isLocked = opt.count > maxAllowed;
+        return (
+          <button
+            key={opt.count}
+            onClick={() => onChange(opt.count)}
+            className={`
+              flex-1 py-2 text-[10px] md:text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5
+              ${value === opt.count 
+                ? 'bg-white dark:bg-[#1a1b26] text-slate-900 dark:text-white shadow-sm' 
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }
+            `}
+          >
+            {opt.label}
+            {isLocked && <Icons.Lock className="w-2.5 h-2.5 text-slate-400 group-hover:text-amber-500 transition-colors" />}
+          </button>
+        );
+      })}
     </div>
   );
 };
@@ -157,12 +162,13 @@ interface GenModelSelectorProps {
   models: GenModel[];
   selectedId: string;
   onSelect: (model: GenModel) => void;
+  isPro?: boolean;
 }
 
-export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelectorProps) => {
+export const GenModelSelector = ({ models, selectedId, onSelect, isPro = true }: GenModelSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null); // Added ref for the portal content
+  const menuRef = useRef<HTMLDivElement>(null); 
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   
   const selectedModel = models.find(m => m.id === selectedId) || models[0];
@@ -182,19 +188,16 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
     setIsOpen(!isOpen);
   };
 
-  // Close on scroll (WINDOW scroll only, not internal scroll) / resize
+  // Close on scroll / resize logic ...
   useEffect(() => {
     if (isOpen) {
       const handleScroll = (event: Event) => {
-        // If scrolling inside the menu, don't close.
-        // Check if event target is the menu or inside the menu.
         if (menuRef.current && (event.target === menuRef.current || menuRef.current.contains(event.target as Node))) {
           return;
         }
         setIsOpen(false);
       };
       
-      // Use capture to detect all scroll events
       window.addEventListener('scroll', handleScroll, true);
       window.addEventListener('resize', () => setIsOpen(false));
       return () => {
@@ -204,11 +207,10 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
     }
   }, [isOpen]);
 
-  // Handle Outside Click (including Portal logic)
+  // Handle Outside Click
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
-      // Check if click is inside the button OR inside the menu (which is in a Portal)
       if (
         buttonRef.current && 
         (buttonRef.current.contains(event.target as Node))
@@ -251,14 +253,19 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">{selectedModel.name}</p>
-              {selectedModel.isPro && (
+              {selectedModel.isPro && !isPro && (
+                <Icons.Lock className="w-3 h-3 text-amber-500" />
+              )}
+              {selectedModel.isPro && isPro && (
                 <span className="text-[9px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-wide">PRO</span>
               )}
             </div>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-              <Icons.Zap className="w-2.5 h-2.5 text-amber-500" />
-              {selectedModel.cost} Credits
-            </p>
+            {(!selectedModel.isPro || isPro) && (
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                <Icons.Zap className="w-2.5 h-2.5 text-amber-500" />
+                {selectedModel.cost} Credits
+              </p>
+            )}
           </div>
         </div>
         <Icons.ChevronLeft className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform ${isOpen ? 'rotate-90 text-violet-500' : '-rotate-90'}`} />
@@ -267,7 +274,7 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
       {/* Render Dropdown via Portal */}
       {isOpen && createPortal(
         <div 
-          ref={menuRef} // Attach Ref here
+          ref={menuRef} 
           className="fixed flex flex-col bg-white dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden animate-fade-in-up"
           style={menuStyle}
           onMouseDown={(e) => e.stopPropagation()}
@@ -275,6 +282,7 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
           <div className="p-2 space-y-1 overflow-y-auto custom-scrollbar">
             {models.map((model) => {
               const isSelected = model.id === selectedId;
+              const isLocked = model.isPro && !isPro;
               return (
                 <button
                   key={model.id}
@@ -285,6 +293,7 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
                       ? 'bg-violet-50 dark:bg-violet-500/10 border-violet-200 dark:border-violet-500/30' 
                       : 'border-transparent hover:bg-slate-50 dark:hover:bg-white/5'
                     }
+                    ${isLocked ? 'opacity-75' : ''}
                   `}
                 >
                   <img src={model.thumbnail} className="w-9 h-9 rounded-md object-cover" alt={model.name} />
@@ -295,11 +304,15 @@ export const GenModelSelector = ({ models, selectedId, onSelect }: GenModelSelec
                       </span>
                       {model.isPro && (
                         <div className="flex items-center gap-1">
-                          <span className="text-[8px] font-bold bg-amber-500/20 text-amber-500 px-1 rounded uppercase">PRO</span>
+                          {isLocked ? (
+                             <Icons.Lock className="w-3 h-3 text-amber-500" />
+                          ) : (
+                             <span className="text-[8px] font-bold bg-amber-500/20 text-amber-500 px-1 rounded uppercase">PRO</span>
+                          )}
                         </div>
                       )}
                     </div>
-                    <span className="text-[10px] text-slate-500">{model.cost} Credits</span>
+                    {!isLocked && <span className="text-[10px] text-slate-500">{model.cost} Credits</span>}
                   </div>
                   {isSelected && <Icons.Check className="w-4 h-4 text-violet-600 dark:text-violet-400" />}
                 </button>

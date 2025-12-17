@@ -4,15 +4,35 @@ import { Icons } from '../../../shared/components/Icons';
 import { NeonButton } from '../../../shared/components/GlassUI';
 import { ExportConfigPro, ExportResolution, ExportFormat } from '../../export/types';
 
-export const ExportProOptions = () => {
-  const [config, setConfig] = useState<ExportConfigPro>({
+export const ExportProOptions = ({ 
+  isUnlocked = true, 
+  onUpgradeClick,
+  config: propConfig,
+  onChange
+}: { 
+  isUnlocked?: boolean; 
+  onUpgradeClick?: () => void;
+  config?: ExportConfigPro;
+  onChange?: (cfg: ExportConfigPro) => void;
+}) => {
+  const [localConfig, setLocalConfig] = useState<ExportConfigPro>({
     format: 'JPG',
     resolution: '2x',
     quality: 90,
     keepMetadata: true,
-    removeWatermark: true,
+    removeWatermark: true, // Default to true (No Watermark)
     colorProfile: 'sRGB'
   });
+
+  const config = propConfig || localConfig;
+  
+  const setConfig = (newConfig: ExportConfigPro) => {
+      if (onChange) {
+          onChange(newConfig);
+      } else {
+          setLocalConfig(newConfig);
+      }
+  };
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [estimatedSize, setEstimatedSize] = useState('4.2 MB');
@@ -114,23 +134,56 @@ export const ExportProOptions = () => {
 
         {/* ROW 3: Toggles */}
         <div className="space-y-3 pt-2">
+          {/* Remove Watermark Toggle */}
           <div 
-            onClick={() => setConfig({...config, removeWatermark: !config.removeWatermark})}
-            className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+            onClick={() => {
+                if (!isUnlocked) {
+                  onUpgradeClick?.();
+                  return;
+                }
+                setConfig({...config, removeWatermark: !config.removeWatermark});
+            }}
+            className={`flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 transition-colors ${!isUnlocked ? 'cursor-pointer hover:bg-white/10' : 'cursor-pointer hover:bg-white/10'}`}
           >
-            <span className="text-xs text-slate-300">Remove Watermark</span>
-            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${config.removeWatermark ? 'bg-green-500' : 'bg-slate-700'}`}>
-              <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${config.removeWatermark ? 'translate-x-4' : 'translate-x-0'}`} />
-            </div>
+            <span className="text-xs text-slate-300 flex items-center gap-2">
+                Remove Watermark
+            </span>
+            {isUnlocked ? (
+              <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${config.removeWatermark ? 'bg-green-500' : 'bg-slate-700'}`}>
+                <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${config.removeWatermark ? 'translate-x-4' : 'translate-x-0'}`} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 text-[10px] font-bold uppercase tracking-wide">
+                <Icons.Lock className="w-3 h-3" />
+                <span>Plus</span>
+              </div>
+            )}
           </div>
+
+          {/* Preserve EXIF Toggle */}
           <div 
-            onClick={() => setConfig({...config, keepMetadata: !config.keepMetadata})}
-            className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+            onClick={() => {
+                if (!isUnlocked) {
+                  onUpgradeClick?.();
+                  return;
+                }
+                setConfig({...config, keepMetadata: !config.keepMetadata});
+            }}
+            className={`flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 transition-colors ${!isUnlocked ? 'cursor-pointer hover:bg-white/10' : 'cursor-pointer hover:bg-white/10'}`}
           >
-            <span className="text-xs text-slate-300">Preserve EXIF Data</span>
-            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${config.keepMetadata ? 'bg-violet-600' : 'bg-slate-700'}`}>
-              <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${config.keepMetadata ? 'translate-x-4' : 'translate-x-0'}`} />
-            </div>
+             <span className="text-xs text-slate-300 flex items-center gap-2">
+                Preserve EXIF Data
+            </span>
+             {isUnlocked ? (
+               <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${config.keepMetadata ? 'bg-violet-600' : 'bg-slate-700'}`}>
+                 <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${config.keepMetadata ? 'translate-x-4' : 'translate-x-0'}`} />
+               </div>
+             ) : (
+               <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20 text-[10px] font-bold uppercase tracking-wide">
+                 <Icons.Lock className="w-3 h-3" />
+                 <span>Plus</span>
+               </div>
+             )}
           </div>
         </div>
       </div>

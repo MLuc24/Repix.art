@@ -20,7 +20,7 @@ export const AIChatPanel = ({ onClose }: { onClose?: () => void }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(true); // Default collapsed
+  const [isCollapsed, setIsCollapsed] = useState(false); // Default expanded for popup mode
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -45,13 +45,13 @@ export const AIChatPanel = ({ onClose }: { onClose?: () => void }) => {
     }
   };
 
-  const handleVoiceInput = () => {
+  const handleAutoPrompt = () => {
     setIsTyping(true);
-    // Simulate listening
+    // Simulate AI thinking and writing a prompt
     setTimeout(() => {
-      setInputValue(prev => prev + (prev ? ' ' : '') + "Add a neon glow effect");
+      setInputValue("Enhance the lighting and add a cinematic color grade to this image.");
       setIsTyping(false);
-    }, 1500);
+    }, 1200);
   };
     
   const clearImage = () => {
@@ -96,27 +96,19 @@ export const AIChatPanel = ({ onClose }: { onClose?: () => void }) => {
     <div className={`flex flex-col bg-[#0e0f13] border-l border-white/5 relative text-white transition-all duration-300 pointer-events-auto shadow-2xl ${isCollapsed ? 'h-14 overflow-hidden rounded-bl-xl' : 'h-full'}`}>
       
       {/* Header */}
+      {/* Header */}
       <div 
-        className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-[#0e0f13] cursor-pointer hover:bg-white/5 transition-colors"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-[#0e0f13]"
       >
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 rounded-lg bg-violet-500/10 text-violet-400">
-             <Icons.Sparkles className="w-4 h-4" />
+             <Icons.Gemini className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white leading-none">Design AI</h3>
             <p className="text-[10px] text-slate-500 font-medium mt-0.5">Assistant</p>
           </div>
         </div>
-        
-        {/* Toggle Button */}
-        <button 
-          className="p-2 rounded-lg text-slate-500 hover:text-white transition-colors"
-          title={isCollapsed ? "Expand" : "Collapse"}
-        >
-          {isCollapsed ? <Icons.ChevronLeft className="-rotate-90 w-4 h-4" /> : <Icons.ChevronLeft className="rotate-90 w-4 h-4" />}
-        </button>
       </div>
 
       {/* Content Wrapper - masked when collapsed */}
@@ -243,12 +235,13 @@ export const AIChatPanel = ({ onClose }: { onClose?: () => void }) => {
                    >
                      <Icons.Image className="w-4 h-4" />
                    </button>
+                   {/* Auto Prompt Button */}
                    <button 
-                     onClick={handleVoiceInput}
-                     className={`p-1.5 rounded-lg transition-colors ${isTyping ? 'text-violet-400 bg-violet-500/10 animate-pulse' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
-                     title="Voice Input"
+                     onClick={handleAutoPrompt}
+                     className={`p-1.5 rounded-lg transition-colors ${isTyping ? 'text-amber-400 bg-amber-500/10 animate-pulse' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                     title="Auto-generate Prompt"
                    >
-                     <Icons.Sparkles className="w-4 h-4" />
+                     <Icons.Wand className="w-4 h-4" />
                    </button>
                 </div>
                 

@@ -5,8 +5,17 @@ import { PRICING_TIERS } from '../../../services/mock/credits';
 import { Icons } from '../../../shared/components/Icons';
 import { NeonButton } from '../../../shared/components/GlassUI';
 
-export const CasualSubscription = ({ onLogout, onNavigate, user }: { onLogout: () => void, onNavigate: (path: string) => void, user: any }) => {
+export const CasualSubscription = ({ onLogout, onNavigate, user, onUpgrade }: { onLogout: () => void, onNavigate: (path: string) => void, user: any, onUpgrade?: (planId: string) => void }) => {
   const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
+  const [upgradingId, setUpgradingId] = useState<string | null>(null);
+
+  const handleUpgradeClick = (planId: string) => {
+    setUpgradingId(planId);
+    setTimeout(() => {
+        if (onUpgrade) onUpgrade(planId);
+        onNavigate('dashboard');
+    }, 1500);
+  };
 
   return (
     <DashboardLayout user={user} onLogout={onLogout} onNavigate={onNavigate} activePage="subscription">
@@ -102,6 +111,8 @@ export const CasualSubscription = ({ onLogout, onNavigate, user }: { onLogout: (
                   </button>
                 ) : (
                   <NeonButton 
+                    onClick={() => handleUpgradeClick(plan.id)}
+                    isLoading={upgradingId === plan.id}
                     className={`w-full text-sm py-3 ${!plan.highlight && '!bg-none !bg-slate-900 dark:!bg-white !text-white dark:!text-black hover:!shadow-lg'}`}
                   >
                     {plan.cta}

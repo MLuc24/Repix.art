@@ -35,7 +35,7 @@ export const CREDIT_PACKS: CreditPack[] = [
 export const PRICING_TIERS = [
   {
     id: 'casual',
-    title: "Casual",
+    title: "Free",
     monthlyPrice: 0,
     yearlyPrice: 0,
     desc: "Perfect for hobbyists.",
@@ -45,27 +45,27 @@ export const PRICING_TIERS = [
   },
   {
     id: 'pro',
-    title: "Pro Creator",
+    title: "Plus",
     monthlyPrice: 15,
     yearlyPrice: 12,
     desc: "For serious designers.",
     features: ["100 Credits / Month", "4K Ultra HD Exports", "Pro Remix Styles", "No Watermark"],
-    cta: "Upgrade to Pro",
+    cta: "Upgrade to Plus",
     highlight: false
   },
   {
     id: 'freelance',
-    title: "Freelance",
+    title: "Pro",
     monthlyPrice: 39,
     yearlyPrice: 29,
     desc: "Manage clients & brand.",
     features: ["500 Credits / Month", "Brand Kits", "Commercial License", "Client Folders"],
-    cta: "Upgrade to Freelance",
+    cta: "Upgrade to Pro",
     highlight: true
   },
   {
     id: 'agency',
-    title: "Agency",
+    title: "Business",
     monthlyPrice: 159,
     yearlyPrice: 129,
     desc: "High volume production.",

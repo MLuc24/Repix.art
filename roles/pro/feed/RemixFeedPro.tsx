@@ -42,9 +42,9 @@ export const RemixFeedPro = ({ onNavigate }: RemixFeedProProps) => {
   return (
     <div className="w-full animate-fade-in-up">
       
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col gap-8">
         
-        {/* MAIN FEED (Left/Center) */}
+        {/* MAIN FEED (Full Width) */}
         <div className="flex-1">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -58,7 +58,7 @@ export const RemixFeedPro = ({ onNavigate }: RemixFeedProProps) => {
 
           <FeedFilterChips active={filter} onChange={setFilter} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
             {filteredItems.map((item) => (
               <RemixFeedCard 
                 key={item.id} 
@@ -74,25 +74,6 @@ export const RemixFeedPro = ({ onNavigate }: RemixFeedProProps) => {
               Load More Inspiration
             </button>
           </div>
-        </div>
-
-        {/* SIDEBAR (Right - Desktop Only) */}
-        <div className="hidden xl:block w-72 shrink-0">
-           <SavedCollectionsWidget items={MOCK_SAVED_COLLECTIONS} />
-           
-           {/* Mini Ad / Tip */}
-           <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-indigo-900/40 border border-violet-500/20">
-              <h4 className="text-sm font-bold text-white mb-2">Pro Tip</h4>
-              <p className="text-xs text-slate-400 mb-3">
-                Did you know you can batch process up to 20 images at once using the "E-Commerce" preset?
-              </p>
-              <button 
-                onClick={() => onNavigate('generator')}
-                className="text-xs font-bold text-violet-300 hover:text-white transition-colors"
-              >
-                Try Batch Mode &rarr;
-              </button>
-           </div>
         </div>
 
       </div>
